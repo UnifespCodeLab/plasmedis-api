@@ -1,6 +1,5 @@
-from flask import request
 from api import db
-from api.model.database.users import Usuario, Privilegio, Bairro
+from api.model.database.users import Usuario
 from api.model.database.notifications import Notificacoes_Conf
 
 def UserToDict(user: Usuario):
@@ -37,57 +36,6 @@ def GetUsers():
         } for user in users]
 
     return {"count": len(results), "users": results, "message": "success"}
-
-#TODO: separar POST e GET
-#TODO: remover verificação de método
-#TODO: remover verificação de json POST
-def Privileges():
-    if request.method == 'POST':
-        if request.is_json:
-            data = request.get_json()
-            new_privilege = Privilegio(user_type=data['user_type'])
-
-            db.session.add(new_privilege)
-            db.session.commit()
-
-            return {"message": f"Privilégio criado com sucesso"}
-        else:
-            return {"error": "A requisição não foi feita no formato esperado"}
-
-    elif request.method == 'GET':
-        privileges = Privilegio.query.all()
-        results = [
-            {
-                "user_type": privilege.user_type
-            } for privilege in privileges]
-
-        return {"count": len(results), "Privileges": results, "message": "success"}
-
-#TODO: separar POST e GET
-#TODO: remover verificação de método
-#TODO: remover verificação de json POST
-def Bairros():
-    if request.method == 'POST':
-        if request.is_json:
-            data = request.get_json()
-            new_bairro = Bairro(nome=data['nome'])
-
-            db.session.add(new_bairro)
-            db.session.commit()
-
-            return {"message": f"Privilégio criado com sucesso"}
-        else:
-            return {"error": "A requisição não foi feita no formato esperado"}
-
-    elif request.method == 'GET':
-        bairros = Bairro.query.all()
-        results = [
-            {
-                "nome": bairro.nome,
-                "id": bairro.id
-            } for bairro in bairros]
-
-        return {"count": len(results), "Bairros": results, "message": "success"}
 
 def GetUserId(id):
     user = Usuario.query.get_or_404(id)
