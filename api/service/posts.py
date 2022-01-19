@@ -68,16 +68,14 @@ def GetPostagens():
 
     return {"count": len(results), "post": results, "message": "success"}
 
-#TODO: remover verificação de método
-def Recomendados():
-    if request.method == 'GET':
-        postagens = Postagem.query.filter_by(selo=True).all()
-        results = []
-        for post in postagens:
-            user = Usuario.query.get_or_404(post.criador)
-            results.append({"id": post.id, "titulo": post.titulo,"texto": post.texto,"criador": user.real_name,"selo":post.selo,"categoria":post.categoria})
+def GetRecomendados():
+    postagens = Postagem.query.filter_by(selo=True).all()
+    results = []
+    for post in postagens:
+        user = Usuario.query.get_or_404(post.criador)
+        results.append({"id": post.id, "titulo": post.titulo,"texto": post.texto,"criador": user.real_name,"selo":post.selo,"categoria":post.categoria})
 
-        return {"count": len(results), "post": results, "message": "success"}
+    return {"count": len(results), "post": results, "message": "success"}
 
 def Filtros(id_categoria):
     postagens = Postagem.query.join(Categoria, id_categoria == Postagem.categoria)
