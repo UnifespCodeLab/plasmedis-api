@@ -86,7 +86,7 @@ def GetFiltros(id_categoria):
 
     return {"count": len(results), "post": results, "message": "success"}
 
-def PostagensId(id):
+def GetPostagensId(id):
     post = Postagem.query.filter_by(id=id).first()
     comments = ComentariosPostagem(post.id)
     post_user = Usuario.query.get_or_404(id)
