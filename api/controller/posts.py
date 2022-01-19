@@ -1,10 +1,18 @@
 from flask_cors import cross_origin
-from api.util.decorators import token_required
+from api.util.decorators import required, token_required
 from api.service.posts import Categorias, Selo, Postagens, Recomendados, Filtros, PostagensId, ListaPostagens
 from flask import Blueprint
+from api import api
+from flask_restx import Resource
+import api.model.request.auth as request
+import api.model.response.auth as response
+import api.model.response.default as default
+
 
 #TODO: adicionar prefixo para as chamadas
 app = Blueprint('posts', __name__, url_prefix='')
+
+posts = api.namespace('posts', description="Posts namespace")
 
 #TODO: criar controller para categorias?
 #TODO: separar POST e GET
@@ -15,12 +23,12 @@ app = Blueprint('posts', __name__, url_prefix='')
 def categorias():
     return Categorias()
 
-#TODO: adicionar json_required PUT
-@app.route('/selo/<id>', methods=['PUT'])
-@cross_origin(origin='*', headers=['Content-Type', 'Authorization'])
-@token_required
-def selo(id):
-    return Selo(id)
+@posts.route("/stamp/<int:id>")
+class Stamp(Resource):
+     @cross_origin(origin='*', headers=['Content-Type', 'Authorization'])
+     @required(response=default.message, token=False)
+     def put(self, data):
+        return Selo(id)
 
 #TODO: separar POST e GET
 #TODO: adicionar json_required POST

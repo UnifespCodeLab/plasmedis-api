@@ -31,18 +31,14 @@ def Categorias():
 
         return {"count": len(results), "Categorias": results, "message": "success"}
 
-#TODO: remover verificação de método
-#TODO: receber 'data' do endpoint ver PUT /users/id:
 def Selo(id):
     postagem = Postagem.query.get_or_404(id)
-    if request.method == 'PUT':
-        data = request.get_json()
-        postagem.selo = True
+    postagem.selo = True
 
-        db.session.add(postagem)
-        db.session.commit()
+    db.session.add(postagem)
+    db.session.commit()
 
-        return {"message": f"Selo emitido!"}
+    return {"message": f"Selo emitido!"}
 
 #TODO: remover verificação de método
 #TODO: remover verificação de json POST
