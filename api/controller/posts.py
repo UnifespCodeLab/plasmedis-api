@@ -1,6 +1,6 @@
 from flask_cors import cross_origin
 from api.util.decorators import required, token_required
-from api.service.posts import Categorias, PutSelo, GetPostagens, PostPostagens, GetRecomendados, Filtros, PostagensId, ListaPostagens
+from api.service.posts import Categorias, PutSelo, GetPostagens, PostPostagens, GetRecomendados, GetFiltros, PostagensId, ListaPostagens
 from flask import Blueprint
 from api import api
 from flask_restx import Resource
@@ -49,17 +49,18 @@ class Recomended(Resource):
     def get(self):
         return GetRecomendados()
 
-@app.route('/recomendados', methods=['GET'])
-@cross_origin(origin='*', headers=['Content-Type', 'Authorization'])
-@token_required
-def recomendados():
-    return GetRecomendados()
-
 @app.route('/postagens/categorias/<id_categoria>', methods=['GET'])
 @cross_origin(origin='*', headers=['Content-Type', 'Authorization'])
 @token_required
 def filtros(id_categoria):
-    return Filtros(id_categoria)
+    return GetFiltros(id_categoria)
+
+@posts.route("/categories/<int:id>")
+class Filter(Resource):
+    @cross_origin(origin='*', headers=['Content-Type', 'Authorization'])
+    @required(response=default.message, token=False)
+    def get(self):
+        return GetFiltros(id)
 
 @app.route('/postagens/<id>', methods=['GET'])
 @cross_origin(origin='*', headers=['Content-Type', 'Authorization'])

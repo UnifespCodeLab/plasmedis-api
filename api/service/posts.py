@@ -77,7 +77,7 @@ def GetRecomendados():
 
     return {"count": len(results), "post": results, "message": "success"}
 
-def Filtros(id_categoria):
+def GetFiltros(id_categoria):
     postagens = Postagem.query.join(Categoria, id_categoria == Postagem.categoria)
     results = []
     for post in postagens:
