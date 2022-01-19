@@ -1,6 +1,6 @@
 from flask_cors import cross_origin
 from api.util.decorators import required, token_required
-from api.service.posts import Categorias, PutSelo, GetPostagens, PostPostagens, GetRecomendados, GetFiltros, GetPostagensId, ListaPostagens
+from api.service.posts import Categorias, PutSelo, GetPostagens, PostPostagens, GetRecomendados, GetFiltros, GetPostagensId, GetListaPostagens
 from flask import Blueprint
 from api import api
 from flask_restx import Resource
@@ -49,7 +49,7 @@ class Recomended(Resource):
     def get(self):
         return GetRecomendados()
 
-@posts.route("/categories/<int:id>")
+@posts.route("/category/<int:id>")
 class Filter(Resource):
     @cross_origin(origin='*', headers=['Content-Type', 'Authorization'])
     @required(response=default.message, token=False)
@@ -63,9 +63,9 @@ class PostsId(Resource):
     def get(self):
         return GetPostagensId(id)
 
-#TODO: padronizar nome?
-@app.route('/lista_postagens/<id>', methods=['GET'])
-@cross_origin(origin='*', headers=['Content-Type', 'Authorization'])
-@token_required
-def lista_postagens(id):
-    return ListaPostagens(id)
+@posts.route("/user/<int:id>")
+class UserPosts(Resource):
+    @cross_origin(origin='*', headers=['Content-Type', 'Authorization'])
+    @required(response=default.message, token=False)
+    def get(self):
+        return GetListaPostagens(id)

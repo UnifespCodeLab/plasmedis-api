@@ -105,17 +105,15 @@ def GetPostagensId(id):
     }
     return result
 
-#TODO: remover verificação de método
-def ListaPostagens(id):
-    if request.method == 'GET':
-        try :
-            postagens = Postagem.query.all()
-            user = Usuario.query.get_or_404(id)
-            results = []
-            for post in postagens:
-                if post.criador == user.id:
-                    results.append({"titulo": post.titulo,"texto": post.texto,"criador": user.real_name})
+def GetListaPostagens(id):
+    try :
+        postagens = Postagem.query.all()
+        user = Usuario.query.get_or_404(id)
+        results = []
+        for post in postagens:
+            if post.criador == user.id:
+                results.append({"titulo": post.titulo,"texto": post.texto,"criador": user.real_name})
 
-            return {"count": len(results), "post": results, "message": "success"}
-        except:
-            return {"error": 404, "message": "Usuário não encontrado"}
+        return {"count": len(results), "post": results, "message": "success"}
+    except:
+        return {"error": 404, "message": "Usuário não encontrado"}
