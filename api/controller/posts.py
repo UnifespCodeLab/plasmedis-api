@@ -1,6 +1,6 @@
 from flask_cors import cross_origin
 from api.util.decorators import required, token_required
-from api.service.posts import Categorias, Selo, Postagens, Recomendados, Filtros, PostagensId, ListaPostagens
+from api.service.posts import Categorias, Selo, GetPostagens, PostPostagens, Recomendados, Filtros, PostagensId, ListaPostagens
 from flask import Blueprint
 from api import api
 from flask_restx import Resource
@@ -23,20 +23,24 @@ posts = api.namespace('posts', description="Posts namespace")
 def categorias():
     return Categorias()
 
-@posts.route("/stamp/<int:id>")
+@posts.route("/<int:id>/stamp")
 class Stamp(Resource):
-     @cross_origin(origin='*', headers=['Content-Type', 'Authorization'])
-     @required(response=default.message, token=False)
-     def put(self, data):
+    @cross_origin(origin='*', headers=['Content-Type', 'Authorization'])
+    @required(response=default.message, token=False)
+    def put(self):
         return Selo(id)
 
-#TODO: separar POST e GET
-#TODO: adicionar json_required POST
-@app.route('/postagens', methods=['POST', 'GET'])
-@cross_origin(origin='*', headers=['Content-Type', 'Authorization'])
-@token_required
-def postagens():
-    return Postagens()
+@posts.route("/")
+class Posts(Resource):
+    @cross_origin(origin='*', headers=['Content-Type', 'Authorization'])
+    @required(response=default.message, token=False)
+    def get(self):
+        return GetPostagens()
+
+    @cross_origin(origin='*', headers=['Content-Type', 'Authorization'])
+    @required(response=default.message, token=False)
+    def post(self, data):
+        return PostPostagens(data)
 
 #TODO: criar controller para recomendados?
 @app.route('/recomendados', methods=['GET'])

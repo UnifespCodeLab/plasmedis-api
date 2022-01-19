@@ -31,7 +31,7 @@ def Categorias():
 
         return {"count": len(results), "Categorias": results, "message": "success"}
 
-def Selo(id):
+def PutSelo(id):
     postagem = Postagem.query.get_or_404(id)
     postagem.selo = True
 
@@ -40,39 +40,33 @@ def Selo(id):
 
     return {"message": f"Selo emitido!"}
 
-#TODO: remover verificação de método
-#TODO: remover verificação de json POST
-def Postagens():
-    if request.method == 'POST':
-        if request.is_json:
-            data = request.get_json()
-            new_post = Postagem(texto=data['texto'], criador=data['criador'], titulo=data['titulo'], categoria=data['categoria'])
+def PostPostagens(data):
+    new_post = Postagem(texto=data['texto'], criador=data['criador'], titulo=data['titulo'], categoria=data['categoria'])
 
-            db.session.add(new_post)
-            db.session.commit()
+    db.session.add(new_post)
+    db.session.commit()
 
-            return {"message": f"Postagem criada"}
-        else:
-            return {"error": "A requisição não está no formato esperado"}
-    elif request.method == 'GET':
-        postagensWithCriador = Postagem.query.join(Usuario, Postagem.criador == Usuario.id, isouter=True).add_columns(Usuario.real_name, Usuario.bairro)
+    return {"message": f"Postagem criada"}
 
-        # filtros gerais
-        bairro = request.args.get('bairro', None)
-        categoria = request.args.get('categoria', None)
+def GetPostagens():
+    postagensWithCriador = Postagem.query.join(Usuario, Postagem.criador == Usuario.id, isouter=True).add_columns(Usuario.real_name, Usuario.bairro)
 
-        if categoria is not None:
-            postagensWithCriador = postagensWithCriador.filter(Postagem.categoria.in_(map(int, categoria.split(','))))
+    # filtros gerais
+    bairro = request.args.get('bairro', None)
+    categoria = request.args.get('categoria', None)
 
-        if bairro is not None:
-            postagensWithCriador = postagensWithCriador.filter(Usuario.bairro.in_(map(int, bairro.split(','))))
+    if categoria is not None:
+        postagensWithCriador = postagensWithCriador.filter(Postagem.categoria.in_(map(int, categoria.split(','))))
 
-        postagens = postagensWithCriador.all()
-        results = []
-        for post in postagens:
-            results.append({"id": post.Postagem.id, "titulo": post.Postagem.titulo,"texto": post.Postagem.texto,"criador": post.real_name,"bairro": post.bairro,"selo":post.Postagem.selo,"categoria":post.Postagem.categoria,"data":post.Postagem.data})
+    if bairro is not None:
+        postagensWithCriador = postagensWithCriador.filter(Usuario.bairro.in_(map(int, bairro.split(','))))
 
-        return {"count": len(results), "post": results, "message": "success"}
+    postagens = postagensWithCriador.all()
+    results = []
+    for post in postagens:
+        results.append({"id": post.Postagem.id, "titulo": post.Postagem.titulo,"texto": post.Postagem.texto,"criador": post.real_name,"bairro": post.bairro,"selo":post.Postagem.selo,"categoria":post.Postagem.categoria,"data":post.Postagem.data})
+
+    return {"count": len(results), "post": results, "message": "success"}
 
 #TODO: remover verificação de método
 def Recomendados():
