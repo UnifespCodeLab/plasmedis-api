@@ -57,7 +57,6 @@ def GetFormSocioGetByUser(user_id):
     response = {
             "nome_rep_familia": form.nome_rep_familia,
             "qtd_pessoas_familia": form.qtd_pessoas_familia,
-            "qtd_criancas": form.qtd_criancas,
             "pessoa_amamenta": form.pessoa_amamenta,
             "qtd_criancas": form.qtd_criancas,
             "gestante": form.gestante,
