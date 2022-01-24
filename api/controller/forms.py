@@ -12,7 +12,7 @@ forms = api.namespace('forms', description="Forms namespace")
 @forms.route("/")
 class Forms(Resource):
     @cross_origin(origin='*', headers=['Content-Type', 'Authorization'])
-    @required(response=default.message, request=request.form_socio, token=False)
+    @required(response=default.message, request=request.form_socio, token=True)
     def post(self, data):
         return PostFormSocio(data)
 
@@ -20,19 +20,19 @@ class Forms(Resource):
 @forms.route("/<int:id>")
 class FormsId(Resource):
     @cross_origin(origin='*', headers=['Content-Type', 'Authorization'])
-    @required(response=response.form_socio_list, token=False)
+    @required(response=response.form_socio_list, token=True)
     def get(self, id):
         return GetFormSocio(id)
     
 @forms.route("/user/<int:id>")
 class FormsUser(Resource):
     @cross_origin(origin='*', headers=['Content-Type', 'Authorization'])
-    @required(response=response.form_socio_message, token=False)
+    @required(response=response.form_socio_message, token=True)
     def get(self, id):
         return GetFormSocioGetByUser(id)
 
     @cross_origin(origin='*', headers=['Content-Type', 'Authorization'])
-    @required(response=default.status_message, request=response.form_socio, token=False)
+    @required(response=default.status_message, request=response.form_socio, token=True)
     def post(self, data, id):
         return PostFormSocioGetByUser(data, id)
 
