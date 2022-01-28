@@ -20,8 +20,12 @@ user_message = api.model("User Message", {
 })
 
 user_email = api.model("User E-mail", {
+    "id": fields.Integer(),
     "user_name": fields.String(),
-    "email": fields.String()
+    "nascimento": fields.String(),
+    "email": fields.String(),
+    "privilegio": fields.Integer(),
+    "is_active": fields.Boolean()
 })
 
 user_email_list = api.model("Users E-mail List", {
