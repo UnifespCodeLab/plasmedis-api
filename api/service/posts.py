@@ -2,8 +2,10 @@ from flask import request
 from api import db
 from api.model.database.posts import Postagem
 from api.model.database.categories import Categoria
+from api.model.database.comments import Comentario
 from api.model.database.users import Usuario
 from api.service.comments import ComentariosPostagem
+from sqlalchemy import func
 
 def PutSelo(id):
     postagem = Postagem.query.get_or_404(id)
@@ -23,22 +25,31 @@ def PostPostagens(data):
     return {"message": f"Postagem criada"}
 
 def GetPostagens():
-    postagensWithCriador = Postagem.query.join(Usuario, Postagem.criador == Usuario.id, isouter=True).add_columns(Usuario.real_name, Usuario.bairro)
+    postagens = Postagem.query.outerjoin(Comentario).add_columns(func.count(Comentario.id).label('comentarios')).group_by(Postagem.id).order_by(Postagem.data.desc())
+
+    # postagensWithCriador = Postagem.query.join(Usuario, Postagem.criador == Usuario.id, isouter=True).outerjoin(
+    #     Comentario).add_columns(Usuario.id, Usuario.real_name, Usuario.bairro, func.count(Comentario.id).label('comentarios')).group_by(Postagem.id, Usuario.id)
 
     # filtros gerais
     bairro = request.args.get('bairro', None)
     categoria = request.args.get('categoria', None)
 
     if categoria is not None:
-        postagensWithCriador = postagensWithCriador.filter(Postagem.categoria.in_(map(int, categoria.split(','))))
+        postagensWithCriador = postagens.filter(Postagem.categoria.in_(map(int, categoria.split(',')))).order_by(Postagem.data.desc())
 
-    if bairro is not None:
-        postagensWithCriador = postagensWithCriador.filter(Usuario.bairro.in_(map(int, bairro.split(','))))
+    # if bairro is not None:
+    #     postagensWithCriador = postagens.filter(Usuario.bairro.in_(map(int, bairro.split(','))))
 
-    postagens = postagensWithCriador.all()
+    postagens = postagens.all()
     results = []
     for post in postagens:
-        results.append({"id": post.Postagem.id, "titulo": post.Postagem.titulo,"texto": post.Postagem.texto,"criador": post.real_name,"bairro": post.bairro,"selo":post.Postagem.selo,"categoria":post.Postagem.categoria,"data":post.Postagem.data})
+        user = Usuario.query.get_or_404(post.Postagem.criador)
+        results.append({"id": post.Postagem.id, "titulo": post.Postagem.titulo, "texto": post.Postagem.texto,
+                        "criador": user.real_name, "id_criador": user.id,
+                        "bairro": user.bairro, "selo": post.Postagem.selo,
+                        "categoria": post.Postagem.categoria,
+                        "data": post.Postagem.data.strftime("%Y-%m-%dT%H:%M:%S"),
+                        "comentarios": post.comentarios})
 
     return {"count": len(results), "post": results, "message": "success"}
 
