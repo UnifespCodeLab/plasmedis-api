@@ -77,7 +77,7 @@ def GetFiltros(id_categoria):
 def GetPostagensId(id):
     post = Postagem.query.filter_by(id=id).first()
     comments = ComentariosPostagem(post.id)
-    post_user = Usuario.query.get_or_404(id)
+    post_user = Usuario.query.get_or_404(post.criador)
     result = {
         "id": post.id,
         "titulo": post.titulo,
@@ -88,7 +88,7 @@ def GetPostagensId(id):
         },
         "selo":post.selo,
         "categoria":post.categoria,
-        "data": post.data,
+        "data": post.data.strftime("%Y-%m-%dT%H:%M:%S"),
         "comentarios": comments['comments']
     }
     return result
