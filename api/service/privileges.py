@@ -8,7 +8,7 @@ def GetPrivileges():
             "user_type": privilege.user_type
         } for privilege in privileges]
 
-    return {"count": len(results), "privileges": results, "message": "success"}
+    return {"count": len(results), "Privileges": results, "message": "success"}
 
 def PostPrivileges(data):
     new_privilege = Privilegio(user_type=data['user_type'])

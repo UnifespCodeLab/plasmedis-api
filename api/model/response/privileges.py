@@ -7,6 +7,6 @@ privileges = api.model("Privileges", {
 
 privileges_list = api.model("User Update",{
     "count": fields.Integer,
-    "privileges": fields.Nested(privileges),
+    "Privileges": fields.Nested(privileges),
     "message": fields.String
 })
