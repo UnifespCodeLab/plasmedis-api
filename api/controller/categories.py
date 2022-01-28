@@ -1,6 +1,6 @@
 from flask_cors import cross_origin
 from api.util.decorators import required
-from api.service.posts import Categorias
+from api.service.posts import PostCategorias, GetCategorias
 from api import api
 from flask_restx import Resource
 import api.model.request.posts as request
@@ -14,10 +14,10 @@ categories = api.namespace('categories', description="Categories namespace")
 class Forms(Resource):
     @cross_origin(origin='*', headers=['Content-Type', 'Authorization'])
     @required(response=default.message, token=False)
-    def post(self):
-        return Categorias()
+    def post(self, data):
+        return PostCategorias(data)
     
     @cross_origin(origin='*', headers=['Content-Type', 'Authorization'])
     @required(response=default.message, token=False)
     def get(self):
-        return Categorias()
+        return GetCategorias()
