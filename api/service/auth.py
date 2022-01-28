@@ -7,6 +7,8 @@ from flask import request
 from api import db, app
 from api.model.database.users import Usuario
 from api.service.users import UserToDict
+from email.mime.multipart import MIMEMultipart
+from email.mime.text import MIMEText
 
 #TODO: padronizar respostas dos endpoints?
 def PostLogin(data):
@@ -37,23 +39,34 @@ def PostEsqueciSenha(data):
 
     if username is None or username == '':
         row = Usuario.query.filter_by(email=email).first()
+        if row is None:
+            return f"O email \"{email}\" não existe"
     else:
         row = Usuario.query.filter_by(user_name=username).first()
+        if row is None:
+            return f"O nome de usuário \"{username}\" não existe"
 
-    # Conecta e inicia o serviço de email
+    #Conecta e inicia o serviço de email
     smtpObj = smtplib.SMTP('smtp.gmail.com', 587)
     res = smtpObj.starttls()
 
-    # Criei essa conta para mandar o email
+    #Criei essa conta para mandar o email
+    # https://stackoverflow.com/questions/54657006/smtpauthenticationerror-5-7-14-please-log-n5-7-14-in-via-your-web-browser/56809076#56809076
     smtpObj.login('codelabtesteesquecisenha@gmail.com', '44D6DDAAC9C660F72D6490D7CC44731BEA7C236A9241B387D3E9AF0C66B30D49')
 
-    # Gera uma hash que servirá como senha temporaria
-    hash = str(random.getrandbits(128))
+    #Gera uma hash que servirá como senha temporaria
+    hash = str(random.getrandbits(128))[:11]
     email = row.email
     row.password = hash
     db.session.add(row)
     db.session.commit()
-    msg = "\n\nSua nova senha e " +hash
-    smtpObj.sendmail('codelabtesteesquecisenha@gmail.com', email, msg)
+
+    msg = MIMEMultipart()
+    msg['Subject'] = 'Recuperação de senha Ibeac'
+    msg['From'] = 'Ibeac-Senha'
+    msg['To'] = email
+    body = MIMEText("A sua nova senha é "+hash)
+    msg.attach(body)
+    smtpObj.sendmail('codelabtesteesquecisenha@gmail.com',email,  msg.as_string())
 
     return { "message": "A senha temporaria foi enviada para o email " + row.email }
