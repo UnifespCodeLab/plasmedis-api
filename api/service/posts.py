@@ -1,35 +1,9 @@
 from flask import request
 from api import db
-from api.model.database.posts import Postagem, Categoria
+from api.model.database.posts import Postagem
+from api.model.database.categories import Categoria
 from api.model.database.users import Usuario
 from api.service.comments import ComentariosPostagem
-
-#TODO: separar POST e GET
-#TODO: remover verificação de método
-#TODO: remover verificação de json POST
-#TODO: padronizar respostas dos endpoints?
-def Categorias():
-    if request.method == 'POST':
-        if request.is_json:
-            data = request.get_json()
-            new_categoria = Categoria(nome=data['nome'])
-
-            db.session.add(new_categoria)
-            db.session.commit()
-
-            return {"message": f"Categoria criado com sucesso"}
-        else:
-            return {"error": "A requisição não foi feita no formato esperado"}
-
-    elif request.method == 'GET':
-        categorias = Categoria.query.all()
-        results = [
-            {
-                "nome": categoria.nome,
-                "id": categoria.id
-            } for categoria in categorias]
-
-        return {"count": len(results), "Categorias": results, "message": "success"}
 
 def PutSelo(id):
     postagem = Postagem.query.get_or_404(id)

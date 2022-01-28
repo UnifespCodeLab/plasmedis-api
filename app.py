@@ -1,10 +1,19 @@
 import os
 from flask_cors import cross_origin
 from api import app
-from api.controller import users, auth, forms, notifications, comments, posts, privileges, neighborhoods
+from api.controller import ( 
+    users, 
+    auth, 
+    forms, 
+    notifications, 
+    comments, 
+    posts, 
+    privileges, 
+    neighborhoods,
+    categories
+)
 
 app.register_blueprint(comments.app)
-app.register_blueprint(posts.app)
 
 # TODO: Mover para controller
 @app.route('/status')

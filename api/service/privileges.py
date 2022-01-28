@@ -1,4 +1,3 @@
-from flask import request
 from api import db
 from api.model.database.privileges import Privilegio
 
@@ -12,7 +11,6 @@ def GetPrivileges():
     return {"count": len(results), "privileges": results, "message": "success"}
 
 def PostPrivileges(data):
-    data = request.get_json()
     new_privilege = Privilegio(user_type=data['user_type'])
 
     db.session.add(new_privilege)

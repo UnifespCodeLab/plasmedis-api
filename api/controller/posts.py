@@ -1,27 +1,13 @@
 from flask_cors import cross_origin
-from api.util.decorators import required, token_required
-from api.service.posts import Categorias, PutSelo, GetPostagens, PostPostagens, GetRecomendados, GetFiltros, GetPostagensId, GetListaPostagens
-from flask import Blueprint
+from api.util.decorators import required
+from api.service.posts import PutSelo, GetPostagens, PostPostagens, GetRecomendados, GetFiltros, GetPostagensId, GetListaPostagens
 from api import api
 from flask_restx import Resource
 import api.model.request.posts as request
 import api.model.response.posts as response
 import api.model.response.default as default
 
-
-#TODO: adicionar prefixo para as chamadas
-app = Blueprint('posts', __name__, url_prefix='')
-
 posts = api.namespace('posts', description="Posts namespace")
-
-#TODO: criar controller para categorias?
-#TODO: separar POST e GET
-#TODO: adicionar json_required POST
-@app.route('/categorias', methods=['POST', 'GET'])
-@cross_origin(origin='*', headers=['Content-Type', 'Authorization'])
-@token_required
-def categorias():
-    return Categorias()
 
 @posts.route("/<int:id>/stamp")
 class Stamp(Resource):
