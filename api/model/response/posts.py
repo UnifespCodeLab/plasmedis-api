@@ -44,9 +44,11 @@ post_full = api.model("Post Full",
     "titulo": fields.String(),
     "texto": fields.String(),
     "criador": fields.String(),
+    "id_criador": fields.Integer(),
     "bairro": fields.Integer(),
     "selo": fields.Boolean(),
     "categoria": fields.Integer(),
+    "comentarios": fields.Integer(),
     "data": fields.String()
 })
 
