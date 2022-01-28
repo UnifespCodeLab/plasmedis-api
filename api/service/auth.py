@@ -13,9 +13,9 @@ from email.mime.text import MIMEText
 #TODO: padronizar respostas dos endpoints?
 def PostLogin(data):
     AUTH_VERSION = os.environ.get("AUTH_VERSION", 0.2)
-    user = Usuario.query.filter_by(user_name=data['username']).first()
+    user = Usuario.query.filter_by(user_name=data['username'], is_active=True).first()
     if user is None:
-        user = Usuario.query.filter_by(email=data['username']).first()
+        user = Usuario.query.filter_by(email=data['username'], is_active=True).first()
     if user:
         if user.password == data['password']:
             expiration = datetime.datetime.utcnow() + datetime.timedelta(days=7)
@@ -31,7 +31,6 @@ def GetLogin():
     # retorna um marcador de versão, para quando as mudanças no token forem tão significativas que o único
     # jeito de atualizar algo no front vai ser matando a sessão atual do usuário
     return {'version': AUTH_VERSION}
-
 
 def PostEsqueciSenha(data):
     username = data.get("username", None)
