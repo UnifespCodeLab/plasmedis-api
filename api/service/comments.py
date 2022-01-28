@@ -21,14 +21,14 @@ def Comentarios():
             return {"error": "A requisição não está no formato esperado"}
 
     elif request.method == 'GET':
-        comments = Comentario.query.all()
+        comments = Comentario.query.order_by(Comentario.data.desc()).all()
         results = [
             {
                 "texto": comment.texto,
                 "criador": comment.criador,
                 "postagem": comment.postagem,
                 "resposta": comment.resposta,
-                "data": comment.data
+                "data": comment.data.strftime("%Y-%m-%dT%H:%M:%S")
             } for comment in comments]
 
         return {"count": len(results), "comments": results, "message": "success"}
@@ -36,11 +36,12 @@ def Comentarios():
 #TODO: remover verificação de método
 def ComentariosPostagem(postagem_id):
     if request.method == 'GET':
-        comments = Comentario.query.filter_by(postagem=postagem_id).all()
+        comments = Comentario.query.filter_by(postagem=postagem_id).order_by(Comentario.data.desc()).all()
         users_id = [ comment.criador for comment in comments ]
         users = Usuario.query.filter(Usuario.id.in_(users_id)).all()
         results = [
         {
+            "id": comment.id,
             "texto": comment.texto,
             "criador":
                 {
@@ -48,6 +49,6 @@ def ComentariosPostagem(postagem_id):
                     "name": next(filter(lambda user: user.id == comment.criador, users)).real_name
                 },
             "resposta": comment.resposta,
-            "data": comment.data
+            "data": comment.data.strftime("%Y-%m-%dT%H:%M:%S")
         } for comment in comments]
         return {"user": 1,"count": len(results), "comments": results, "message": "success"}
