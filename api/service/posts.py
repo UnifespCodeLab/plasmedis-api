@@ -54,11 +54,12 @@ def GetPostagens():
     return {"count": len(results), "post": results, "message": "success"}
 
 def GetRecomendados():
-    postagens = Postagem.query.filter_by(selo=True).all()
+    postagens = db.session.query(Postagem, func.count(Comentario.id).label('comentarios')).outerjoin(Comentario).filter(Postagem.selo == True).group_by(Postagem.id).order_by(Postagem.data.desc())
     results = []
-    for post in postagens:
+    for post, comentarios in postagens:
         user = Usuario.query.get_or_404(post.criador)
-        results.append({"id": post.id, "titulo": post.titulo,"texto": post.texto,"criador": user.real_name,"selo":post.selo,"categoria":post.categoria})
+        results.append({"id": post.id, "titulo": post.titulo, "texto": post.texto, "criador": user.real_name,
+                        "selo": post.selo, "categoria": post.categoria, "comentarios": comentarios})
 
     return {"count": len(results), "post": results, "message": "success"}
 
