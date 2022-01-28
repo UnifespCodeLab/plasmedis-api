@@ -28,11 +28,15 @@ def PostUsers(data):
     return {"message": f"Usuario criado", "user": new_user.id}
 
 def GetUsers():
-    users = Usuario.query.all()
+    users = Usuario.query.order_by("id").all()
     results = [
         {
+            "id": user.id,
             "user_name": user.user_name,
-            "email": user.email
+            "nascimento": user.nascimento,
+            "email": user.email,
+            "privilegio": user.user_type,
+            "is_active": user.is_active
         } for user in users]
 
     return {"count": len(results), "users": results, "message": "success"}
