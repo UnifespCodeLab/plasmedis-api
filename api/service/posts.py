@@ -95,7 +95,7 @@ def GetPostagensId(id):
 
 def GetListaPostagens(id):
     try :
-        postagens = Postagem.query.all()
+        postagens = Postagem.query.order_by(Postagem.data.desc()).all()
         user = Usuario.query.get_or_404(id)
         results = []
         for post in postagens:
