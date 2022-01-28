@@ -63,11 +63,13 @@ def GetRecomendados():
     return {"count": len(results), "post": results, "message": "success"}
 
 def GetFiltros(id_categoria):
-    postagens = Postagem.query.join(Categoria, id_categoria == Postagem.categoria)
+    postagens = db.session.query(Postagem, func.count(Comentario.id).label('comentarios')).outerjoin(Comentario).filter(Postagem.categoria == id_categoria).group_by(Postagem.id).order_by(Postagem.data.desc())
     results = []
-    for post in postagens:
+    for post, comentarios in postagens:
         user = Usuario.query.get_or_404(post.criador)
-        results.append({"id": post.id, "titulo": post.titulo,"texto": post.texto,"criador": user.real_name,"selo":post.selo,"categoria":post.categoria, "data": post.data})
+        results.append(
+            {"id": post.id, "titulo": post.titulo, "texto": post.texto, "criador": user.real_name, "id_criador": user.id, "selo": post.selo,
+             "categoria": post.categoria, "data": post.data.strftime("%Y-%m-%dT%H:%M:%S"), "comentarios": comentarios})
 
     return {"count": len(results), "post": results, "message": "success"}
 
