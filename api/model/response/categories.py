@@ -3,7 +3,8 @@ from flask_restx import fields
 
 category = api.model("Category", {
     "id": fields.Integer(),
-    "nome": fields.String("nome")
+    "nome": fields.String("nome"),
+    "postagens": fields.Integer()
 })
 
 category_list = api.model("Category List", {
