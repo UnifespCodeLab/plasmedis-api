@@ -4,7 +4,7 @@ from api.model.database.posts import Postagem
 from api.model.database.categories import Categoria
 from api.model.database.comments import Comentario
 from api.model.database.users import Usuario
-from api.service.comments import ComentariosPostagem
+from api.service.comments import GetComentariosPostagem
 from sqlalchemy import func
 
 def PutSelo(id):
@@ -76,7 +76,7 @@ def GetFiltros(id_categoria):
 
 def GetPostagensId(id):
     post = Postagem.query.filter_by(id=id).first()
-    comments = ComentariosPostagem(post.id)
+    comments = GetComentariosPostagem(post.id)
     post_user = Usuario.query.get_or_404(post.criador)
     result = {
         "id": post.id,
