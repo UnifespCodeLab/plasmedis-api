@@ -13,8 +13,6 @@ from api.controller import (
     categories
 )
 
-app.register_blueprint(comments.app)
-
 # TODO: Mover para controller
 @app.route('/status')
 def hello():

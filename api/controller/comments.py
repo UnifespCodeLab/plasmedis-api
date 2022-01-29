@@ -1,21 +1,29 @@
 from flask_cors import cross_origin
-from api.util.decorators import token_required
+from api.util.decorators import required
 from api.service.comments import Comentarios, ComentariosPostagem
-from flask import Blueprint
+from api import api
+from flask_restx import Resource
+import api.model.request.categories as request
+import api.model.response.categories as response
+import api.model.response.default as default
 
-#TODO: adicionar prefixo para as chamadas
-app = Blueprint('comments', __name__, url_prefix='')
+comments = api.namespace('comments', description="Comments namespace")
 
-#TODO: separar POST e GET
-#TODO: adicionar json_required POST
-@app.route('/comentarios', methods=['POST', 'GET'])
-@cross_origin(origin='*', headers=['Content-Type', 'Authorization'])
-@token_required
-def comentarios():
-    return Comentarios()
+@comments.route("/")
+class Comments(Resource):
+    @cross_origin(origin='*', headers=['Content-Type', 'Authorization'])
+    @required(response=default.message, token=False)
+    def post(self, data):
+        return Comentarios()
+    
+    @cross_origin(origin='*', headers=['Content-Type', 'Authorization'])
+    @required(response=default.message, token=False)
+    def get(self):
+        return Comentarios()
 
-@app.route('/comentarios/<postagem_id>', methods=['GET'])
-@cross_origin(origin='*', headers=['Content-Type', 'Authorization'])
-@token_required
-def comentarios_postagem(postagem_id):
-    return ComentariosPostagem(postagem_id)
+@comments.route("/post/<int:id>")
+class CommentsPost(Resource):
+    @cross_origin(origin='*', headers=['Content-Type', 'Authorization'])
+    @required(response=default.message, token=False)
+    def get(self, id):
+        return ComentariosPostagem(id)
