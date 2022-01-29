@@ -12,6 +12,8 @@ def PostComentarios(data):
 
 def GetComentarios():
     comments = Comentario.query.order_by(Comentario.data.desc()).all()
+    for comment in comments:
+        print(comment.id, " ", comment.data)
     results = [
         {
             "texto": comment.texto,
