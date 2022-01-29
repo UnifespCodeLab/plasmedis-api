@@ -1,6 +1,6 @@
 from flask_cors import cross_origin
 from api.util.decorators import required
-from api.service.comments import Comentarios, ComentariosPostagem
+from api.service.comments import PostComentarios, GetComentarios, GetComentariosPostagem
 from api import api
 from flask_restx import Resource
 import api.model.request.categories as request
@@ -14,16 +14,16 @@ class Comments(Resource):
     @cross_origin(origin='*', headers=['Content-Type', 'Authorization'])
     @required(response=default.message, token=False)
     def post(self, data):
-        return Comentarios()
+        return PostComentarios(data)
     
     @cross_origin(origin='*', headers=['Content-Type', 'Authorization'])
     @required(response=default.message, token=False)
     def get(self):
-        return Comentarios()
+        return GetComentarios()
 
 @comments.route("/post/<int:id>")
 class CommentsPost(Resource):
     @cross_origin(origin='*', headers=['Content-Type', 'Authorization'])
     @required(response=default.message, token=False)
     def get(self, id):
-        return ComentariosPostagem(id)
+        return GetComentariosPostagem(id)
