@@ -17,6 +17,7 @@ class Usuario(db.Model):
     data_registro = db.Column(db.DateTime, nullable=True)
     bairro = db.Column(db.Integer, db.ForeignKey('bairros.id'), nullable=False)
     user_type = db.Column(db.Integer, db.ForeignKey('privilegios.id'), nullable=False)
+    is_active = db.Column(db.Boolean, default=True, nullable=False)
 
     def __init__(self, real_name, password, user_name, user_type, bairro):
         import datetime

@@ -1,4 +1,6 @@
+import imp
 from api import db
+import datetime
 
 class Comentario(db.Model):
     __tablename__ = 'comentarios'
@@ -7,7 +9,7 @@ class Comentario(db.Model):
     criador = db.Column(db.Integer, db.ForeignKey('usuarios.id'), nullable=False)
     postagem = db.Column(db.Integer, db.ForeignKey('postagens.id'), nullable=False)
     resposta = db.Column(db.Integer, db.ForeignKey('comentarios.id'), nullable=True)
-    data = db.Column(db.Time)
+    data = db.Column(db.DateTime(timezone=True), default=datetime.datetime.utcnow)
 
     def __init__(self, texto, criador, postagem, resposta):
         self.texto = texto
