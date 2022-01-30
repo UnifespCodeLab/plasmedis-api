@@ -8,3 +8,10 @@ comment = api.model("Comment Create",
     "resposta": fields.Integer(),
     "postagem": fields.Integer()
 })
+
+comment_put = api.model("Comment update",{
+    "texto": fields.String(),
+    "criador": fields.Integer(),
+    "resposta": fields.Integer(),
+    "postagem": fields.Integer()
+})

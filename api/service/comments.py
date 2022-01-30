@@ -42,3 +42,19 @@ def GetComentariosPostagem(postagem_id):
         "data": comment.data.strftime("%Y-%m-%dT%H:%M:%S")
     } for comment in comments]
     return {"user": 1,"count": len(results), "comments": results, "message": "success"}
+
+def getComment(commentId):
+    return Comentario.query.filter_by(id = commentId).first()
+
+def PutComentarios(comment_id, data):
+    comment = Comentario.query.filter_by(id=comment_id).first()
+
+    for key, value in data.items():
+        if hasattr(comment, key):
+            setattr(comment, key, value)
+
+    db.session.add(comment)
+    db.session.commit()
+    comment = getComment(comment_id)
+    
+    return comment
