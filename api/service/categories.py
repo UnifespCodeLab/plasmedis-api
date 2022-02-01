@@ -21,3 +21,10 @@ def GetCategorias():
         } for categoria in categorias]
 
     return {"count": len(results), "Categorias": results, "message": "success"}
+
+def deleteCategorias(id):
+    categoria = Categoria.query.get_or_404(id)
+    db.session.delete(categoria)
+    db.session.commit()
+
+    return  {"message": f"Categoria deletada com sucesso"}
