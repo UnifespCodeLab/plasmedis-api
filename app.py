@@ -475,10 +475,21 @@ def categorias():
 
         return {"count": len(results), "Categorias": results, "message": "success"}
 
-@app.route('/categorias/<id>', methods=['DELETE'])
+@app.route('/categorias/<id>', methods=['DELETE', 'PUT'])
 @cross_origin(origin='*', headers=['Content-Type', 'Authorization'])
 @token_required
 def categoriasId(id):
+    if request.method == 'PUT':
+        if request.is_json:
+            data = request.get_json()
+            categoria = Categoria.query.get_or_404(id)
+            categoria.nome = data["nome"]
+            db.session.commit()
+
+            return {"message": f"Categoria editada com sucesso"}
+        else:
+            return {"error": "A requisição não foi feita no formato esperado"}
+
     if request.method == 'DELETE':
         if request.is_json:
             if id == "0":
