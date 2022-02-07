@@ -497,18 +497,20 @@ def handle_user(id):
 
     elif request.method == 'PUT':
         data = request.get_json()
-        #user.email = data['email']
-        #user.real_name = data['real_name']
+        include = [
+            "email", "real_name", "verificado", 
+            "sexo", "nascimento", "cor",
+            "telefone", "rua", "numero_casa"
+        ]
         #user.password = data['password']
-        user.verificado = True
-        user.sexo = data['sexo']
-        user.nascimento = data['nascimento']
-        user.cor = data['cor']
-        user.telefone = data['telefone']
-        user.rua = data['rua']
-        user.numero_casa = data['numero_casa']
+        userDict = {}
+        for key in data:
+            if key in include:
+                userDict[key] = data[key]
 
-        db.session.add(user)
+        if "verificado" not in data:
+            data["verificado"] = True
+        Usuario.query.filter(Usuario.id == user.id).update(userDict)
         db.session.commit()
 
         return {"message": f"Dados de {user.user_name} atualizados"}
