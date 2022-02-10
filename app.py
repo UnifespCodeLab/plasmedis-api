@@ -510,6 +510,10 @@ def handle_user(id):
 
         if "verificado" not in data:
             data["verificado"] = True
+
+        if len(userDict) == 0:
+            return {"error": "A requisição não foi feita no formato esperado"}
+
         Usuario.query.filter(Usuario.id == user.id).update(userDict)
         db.session.commit()
 
