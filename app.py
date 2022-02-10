@@ -508,9 +508,6 @@ def handle_user(id):
             if key in include:
                 userDict[key] = data[key]
 
-        if "verificado" not in data:
-            data["verificado"] = True
-
         if len(userDict) == 0:
             return {"error": "A requisição não foi feita no formato esperado"}
 
