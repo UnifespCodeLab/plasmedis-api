@@ -545,7 +545,8 @@ def handle_user(id):
         include = [
             "email", "real_name", "verificado", 
             "sexo", "nascimento", "cor",
-            "telefone", "rua", "numero_casa"
+            "telefone", "rua", "numero_casa", 
+            "user_type"
         ]
         #user.password = data['password']
         userDict = get_update_dict(include, data)
