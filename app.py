@@ -173,6 +173,17 @@ def get_authorized_user(request):
                                "verify_nbf": False})
     return payload['sub']
 
+def verify_user_privileges(request, accepted: list, rejected: list=[]) -> bool:
+    id = get_authorized_user(request)
+    privilege = Usuario.query.get(id).user_type
+    
+    privilege_filter = Privilegio.user_type.in_(accepted + rejected)
+    privileges = Privilegio.query.filter(privilege_filter).all()
+    
+    accept = [p.id for p in privileges if (p.user_type in accepted) and (p.user_type not in rejected)]
+
+    return privilege in accept
+
 def token_required(f):
    @wraps(f)
    def decorator(*args, **kwargs):
@@ -528,6 +539,9 @@ def handle_user(id):
 
     elif request.method == 'PUT':
         data = request.get_json()
+        if verify_user_privileges(request, ["Moderador", "Admin"]):
+            return {"error": "O usuário não tem autorização para essa ação"}
+
         include = [
             "email", "real_name", "verificado", 
             "sexo", "nascimento", "cor",
@@ -744,13 +758,12 @@ def comentarios():
             comentario = Comentario.query.filter_by(id=data['comentario_id']).first()
             id = get_authorized_user(request)
             usuario = Usuario.query.get(id)
-            privilegio_adm = Privilegio.query.filter_by(user_type='Admin').first()
-            privilegio_mod = Privilegio.query.filter_by(user_type='Moderador').first()
+            privilegio = verify_user_privileges(request, ["Moderador", "Admin"])
 
             if not usuario or not comentario:
                 return {"error": "Informações de usuário ou comentário inválidas"}
 
-            if usuario.id == comentario.criador or usuario.user_type == privilegio_adm.id or usuario.user_type == privilegio_mod.id:
+            if usuario.id == comentario.criador or privilegio:
                 db.session.delete(comentario)
                 db.session.commit()
                 return {"message": "Comentário removido com sucesso"}
