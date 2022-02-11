@@ -352,7 +352,7 @@ def form_socio_get_by_user(user_id):
             return {"message": "success", "form": response}
 
 
-@app.route('/users', methods=['POST', 'GET'])
+@app.route('/users', methods=['POST', 'GET', 'PUT'])
 @cross_origin(origin='*', headers=['Content-Type', 'Authorization'])
 @token_required
 def users():
