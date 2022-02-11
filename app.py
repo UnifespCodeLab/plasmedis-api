@@ -539,7 +539,7 @@ def handle_user(id):
 
     elif request.method == 'PUT':
         data = request.get_json()
-        if verify_user_privileges(request, ["Moderador", "Admin"]):
+        if not verify_user_privileges(request, ["Moderador", "Admin"]):
             return {"error": "O usuário não tem autorização para essa ação"}
 
         include = [
