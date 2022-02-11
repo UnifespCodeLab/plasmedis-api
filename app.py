@@ -475,6 +475,48 @@ def categorias():
 
         return {"count": len(results), "Categorias": results, "message": "success"}
 
+@app.route('/categorias/<id>', methods=['DELETE', 'PUT'])
+@cross_origin(origin='*', headers=['Content-Type', 'Authorization'])
+@token_required
+def categoriasId(id):
+    if request.method == 'PUT':
+        if request.is_json:
+            data = request.get_json()
+            categoria = Categoria.query.get_or_404(id)
+
+            if "nome" not in data:
+                return {"error": "A requisição não foi feita no formato esperado"}
+
+            categoria.nome = data["nome"]
+            db.session.commit()
+
+            return {"message": f"Categoria editada com sucesso"}
+        else:
+            return {"error": "A requisição não foi feita no formato esperado"}
+
+    if request.method == 'DELETE':
+        replace = None
+        if request.is_json:
+            data = request.get_json()
+
+            if "replace_id" in data:
+                replace = Categoria.query.filter_by(id=data["replace_id"]).first()
+
+        if id == "0":
+            return {"message": f"Não é possivel remover essa categoria"}
+
+        categoria = Categoria.query.get_or_404(id)
+
+        if replace:
+            Postagem.query.filter(Postagem.categoria == id).update({"categoria": replace.id})
+        else:
+            Postagem.query.filter(Postagem.categoria == id).update({"categoria": 0})
+
+        db.session.delete(categoria)
+        db.session.commit()
+
+        return {"message": f"Categoria removida com sucesso"}
+
 @app.route('/users/<id>', methods=['GET', 'PUT'])
 @cross_origin(origin='*', headers=['Content-Type', 'Authorization'])
 @token_required
