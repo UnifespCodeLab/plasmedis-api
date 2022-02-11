@@ -154,6 +154,17 @@ class Form_Socioeconomico(db.Model):
         self.pessoa_amamenta = pessoa_amamenta
         self.preenchido = True
 
+def get_update_dict(include, data) -> dict:
+    verified = {}
+    for key in data:
+        if key in include:
+            verified[key] = data[key]
+
+    if len(verified) == 0:
+        return None
+    
+    return verified
+
 def get_authorized_user(request):
     token = request.headers['Authorization'].split("Bearer ")[1]
     payload = jwt.decode(token, app.config['SECRET_KEY'], issuer=os.environ.get('ME', 'plasmedis-api-local'),
@@ -366,6 +377,26 @@ def users():
 
         return {"count": len(results), "users": results, "message": "success"}
 
+    elif request.method == 'PUT':
+        id = get_authorized_user(request)
+        user = Usuario.query.get(id)
+
+        data = request.get_json()
+        include = [
+            "email", "real_name", "verificado", 
+            "sexo", "nascimento", "cor",
+            "telefone", "rua", "numero_casa"
+        ]
+        #user.password = data['password']
+        userDict = get_update_dict(include, data)
+        if userDict == None:
+            return {"error": "A requisição não foi feita no formato esperado"}
+
+        Usuario.query.filter(Usuario.id == user.id).update(userDict)
+        db.session.commit()
+
+        return {"message": f"Dados de {user.user_name} atualizados"}
+
 @app.route('/login', methods=['POST', 'GET'])
 @cross_origin(origin='*', headers=['Content-Type', 'Authorization'])
 def login():
@@ -503,12 +534,8 @@ def handle_user(id):
             "telefone", "rua", "numero_casa"
         ]
         #user.password = data['password']
-        userDict = {}
-        for key in data:
-            if key in include:
-                userDict[key] = data[key]
-
-        if len(userDict) == 0:
+        userDict = get_update_dict(include, data)
+        if len(userDict) == None:
             return {"error": "A requisição não foi feita no formato esperado"}
 
         Usuario.query.filter(Usuario.id == user.id).update(userDict)
