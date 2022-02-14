@@ -50,3 +50,10 @@ class Inactivate(Resource):
     @required(response=default.message, token=True)
     def post(self, id):
         return PostIsActive(id, False)
+
+@users.route("/<int:id>/activate")
+class Activate(Resource):
+    @cross_origin(origin='*', headers=['Content-Type', 'Authorization'])
+    @required(response=default.message, token=True)
+    def post(self, id):
+        return PostIsActive(id, True)
