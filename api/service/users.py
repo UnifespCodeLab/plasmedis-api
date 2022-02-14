@@ -91,3 +91,11 @@ def GetVerify(username):
         return { "success": False, "message": "User with username '" + str(username) + "' already exists." }
     else:
         return { "success": True, "message": "Username '" + str(username) + "' is available."}
+
+def PostIsActive(id: int, value: bool):
+    user = Usuario.query.get_or_404(id)
+    user.is_active = value
+
+    db.session.add(user)
+    db.session.commit()
+    return {"message": "success"}
