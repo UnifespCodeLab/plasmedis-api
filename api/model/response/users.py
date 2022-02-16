@@ -47,3 +47,12 @@ user_create_message = api.model("User Create Message", {
     "message": fields.String(),
     "user": fields.Integer()
 })
+
+user_dict = api.model("User basic", {
+    "id": fields.Integer(),
+    "user_name": fields.String(),
+    "real_name": fields.String(),
+    "email": fields.String(),
+    "user_type": fields.Integer(),
+    "verificado": fields.Boolean()
+})

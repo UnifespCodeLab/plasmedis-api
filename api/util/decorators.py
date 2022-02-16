@@ -3,11 +3,12 @@ import jwt
 from flask import request
 from api import app, api
 from functools import wraps
+from inspect import getfullargspec
 
 
 def token_required(f):
     @wraps(f)
-    def decorator(*args, **kwargs):
+    def decorator(self, *args, **kwargs):
         token = None
         try:
             token = request.headers['Authorization'].split("Bearer ")[1]
@@ -37,9 +38,7 @@ def token_required(f):
             return {'message': 'Token failed validation'}
         except Exception as ex:
             return {'message': 'There was a error decoding the token'}
-
-        return f(*args, **kwargs)
-
+        return f(self, jwt=data, *args, **kwargs)
     return decorator
 
 
@@ -48,7 +47,7 @@ def json_required(f):
     def decorator(self, *args, **kwargs):
         if not request.is_json:
             return {'message': 'Espected json'}, 400
-        return f(self, request.get_json(), *args, **kwargs)
+        return f(self, data=request.get_json(), *args, **kwargs)
     return decorator
 
 def required(response, request=None, token=False):
@@ -61,6 +60,9 @@ def required(response, request=None, token=False):
         @api.expect(request, parser)
         @api.marshal_with(response)
         def decorator(*args, **kwargs):
+            argspec = getfullargspec(f)
+            if "jwt" not in argspec.args and "jwt" in kwargs:
+                del kwargs["jwt"]
             return f(*args, **kwargs)
         
         if token:

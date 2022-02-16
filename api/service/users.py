@@ -1,6 +1,7 @@
 from api import db
 from api.model.database.users import Usuario
 from api.model.database.notifications import Notificacoes_Conf
+from api.util.functions import get_authorized_user
 
 def UserToDict(user: Usuario):
     return {
@@ -99,3 +100,10 @@ def PostIsActive(id: int, value: bool):
     db.session.add(user)
     db.session.commit()
     return {"message": "success"}
+
+def GetMe(jwt):
+    id = get_authorized_user(jwt)
+
+    user = Usuario.query.get(id)
+
+    return UserToDict(user)

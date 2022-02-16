@@ -1,6 +1,6 @@
 from flask_cors import cross_origin
 from api.util.decorators import required
-from api.service.users import GetUsers, GetVerify, PostUsers, GetUserId, PutUserId, DelUserId, PostIsActive
+from api.service.users import GetUsers, GetVerify, PostUsers, GetUserId, PutUserId, DelUserId, PostIsActive, GetMe
 from api import api
 from flask_restx import Resource
 import api.model.request.users as request
@@ -57,3 +57,10 @@ class Activate(Resource):
     @required(response=default.message, token=True)
     def post(self, id):
         return PostIsActive(id, True)
+
+@users.route("/me")
+class Me(Resource):
+    @cross_origin(origin='*', headers=['Content-Type', 'Authorization'])
+    @required(response=response.user_dict, token=True)
+    def get(self, jwt):
+        return GetMe(jwt)
