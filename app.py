@@ -564,7 +564,7 @@ def recomendados():
         for post, comentarios in postagens:
             user = Usuario.query.get_or_404(post.criador)
             results.append({"id": post.id, "titulo": post.titulo, "texto": post.texto, "criador": user.real_name,
-                            "selo": post.selo, "categoria": post.categoria, "comentarios": comentarios})
+                            "selo": post.selo, "categoria": post.categoria, "data": post.data.strftime("%Y-%m-%dT%H:%M:%S"), "comentarios": comentarios})
 
         return {"count": len(results), "post": results, "message": "success"}
 
