@@ -154,6 +154,17 @@ class Form_Socioeconomico(db.Model):
         self.pessoa_amamenta = pessoa_amamenta
         self.preenchido = True
 
+def get_update_dict(include, data) -> dict:
+    verified = {}
+    for key in data:
+        if key in include:
+            verified[key] = data[key]
+
+    if len(verified) == 0:
+        return None
+    
+    return verified
+
 def get_authorized_user(request):
     token = request.headers['Authorization'].split("Bearer ")[1]
     payload = jwt.decode(token, app.config['SECRET_KEY'], issuer=os.environ.get('ME', 'plasmedis-api-local'),
@@ -161,6 +172,17 @@ def get_authorized_user(request):
                       options={"require": ["exp", "sub", "iss", "aud"], "verify_aud": False, "verify_iat": False,
                                "verify_nbf": False})
     return payload['sub']
+
+def verify_user_privileges(request, accepted: list, rejected: list=[]) -> bool:
+    id = get_authorized_user(request)
+    privilege = Usuario.query.get(id).user_type
+    
+    privilege_filter = Privilegio.user_type.in_(accepted + rejected)
+    privileges = Privilegio.query.filter(privilege_filter).all()
+    
+    accept = [p.id for p in privileges if (p.user_type in accepted) and (p.user_type not in rejected)]
+
+    return privilege in accept
 
 def token_required(f):
    @wraps(f)
@@ -330,7 +352,7 @@ def form_socio_get_by_user(user_id):
             return {"message": "success", "form": response}
 
 
-@app.route('/users', methods=['POST', 'GET'])
+@app.route('/users', methods=['POST', 'GET', 'PUT'])
 @cross_origin(origin='*', headers=['Content-Type', 'Authorization'])
 @token_required
 def users():
@@ -365,6 +387,26 @@ def users():
             } for user in users]
 
         return {"count": len(results), "users": results, "message": "success"}
+
+    elif request.method == 'PUT':
+        id = get_authorized_user(request)
+        user = Usuario.query.get(id)
+
+        data = request.get_json()
+        include = [
+            "email", "real_name", "verificado", 
+            "sexo", "nascimento", "cor",
+            "telefone", "rua", "numero_casa"
+        ]
+        #user.password = data['password']
+        userDict = get_update_dict(include, data)
+        if userDict == None:
+            return {"error": "A requisição não foi feita no formato esperado"}
+
+        Usuario.query.filter(Usuario.id == user.id).update(userDict)
+        db.session.commit()
+
+        return {"message": f"Dados de {user.user_name} atualizados"}
 
 @app.route('/login', methods=['POST', 'GET'])
 @cross_origin(origin='*', headers=['Content-Type', 'Authorization'])
@@ -539,18 +581,21 @@ def handle_user(id):
 
     elif request.method == 'PUT':
         data = request.get_json()
-        #user.email = data['email']
-        #user.real_name = data['real_name']
-        #user.password = data['password']
-        user.verificado = True
-        user.sexo = data['sexo']
-        user.nascimento = data['nascimento']
-        user.cor = data['cor']
-        user.telefone = data['telefone']
-        user.rua = data['rua']
-        user.numero_casa = data['numero_casa']
+        if not verify_user_privileges(request, ["Moderador", "Admin"]):
+            return {"error": "O usuário não tem autorização para essa ação"}
 
-        db.session.add(user)
+        include = [
+            "email", "real_name", "verificado", 
+            "sexo", "nascimento", "cor",
+            "telefone", "rua", "numero_casa", 
+            "user_type"
+        ]
+        #user.password = data['password']
+        userDict = get_update_dict(include, data)
+        if len(userDict) == None:
+            return {"error": "A requisição não foi feita no formato esperado"}
+
+        Usuario.query.filter(Usuario.id == user.id).update(userDict)
         db.session.commit()
 
         return {"message": f"Dados de {user.user_name} atualizados"}
@@ -756,13 +801,12 @@ def comentarios():
             comentario = Comentario.query.filter_by(id=data['comentario_id']).first()
             id = get_authorized_user(request)
             usuario = Usuario.query.get(id)
-            privilegio_adm = Privilegio.query.filter_by(user_type='Admin').first()
-            privilegio_mod = Privilegio.query.filter_by(user_type='Moderador').first()
+            privilegio = verify_user_privileges(request, ["Moderador", "Admin"])
 
             if not usuario or not comentario:
                 return {"error": "Informações de usuário ou comentário inválidas"}
 
-            if usuario.id == comentario.criador or usuario.user_type == privilegio_adm.id or usuario.user_type == privilegio_mod.id:
+            if usuario.id == comentario.criador or privilegio:
                 db.session.delete(comentario)
                 db.session.commit()
                 return {"message": "Comentário removido com sucesso"}
