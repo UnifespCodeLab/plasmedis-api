@@ -2,6 +2,7 @@ from api import db
 from api.model.database.users import Usuario
 from api.model.database.notifications import Notificacoes_Conf
 
+
 def UserToDict(user: Usuario):
     return {
         "id": user.id,
@@ -12,20 +13,24 @@ def UserToDict(user: Usuario):
         "email": user.email
     }
 
-#TODO: padronizar respostas dos endpoints?
+
+# TODO: padronizar respostas dos endpoints?
 def PostUsers(data):
-    new_user = Usuario(real_name=data['real_name'], password=data['password'], user_name=data['user_name'], user_type=data['user_type'], bairro=data['bairro'])
+    new_user = Usuario(real_name=data['real_name'], password=data['password'], user_name=data['user_name'],
+                       user_type=data['user_type'], bairro=data['bairro'])
     if "email" in data:
         new_user.email = data['email']
     db.session.add(new_user)
     db.session.commit()
-    
-    new_user = Usuario.query.filter_by(user_name=data['user_name'],real_name=data['real_name']).first()
-    new_user_not = Notificacoes_Conf(usuario=new_user.id, sistema=False, selo_postagem=False, comentario_postagem=False, saude=False, lazer=False, trocas=False)
+
+    new_user = Usuario.query.filter_by(user_name=data['user_name'], real_name=data['real_name']).first()
+    new_user_not = Notificacoes_Conf(usuario=new_user.id, sistema=False, selo_postagem=False, comentario_postagem=False,
+                                     saude=False, lazer=False, trocas=False)
     db.session.add(new_user_not)
     db.session.commit()
 
     return {"message": f"Usuario criado", "user": new_user.id}
+
 
 def GetUsers():
     users = Usuario.query.order_by("id").all()
@@ -40,6 +45,7 @@ def GetUsers():
         } for user in users]
 
     return {"count": len(results), "users": results, "message": "success"}
+
 
 def GetUserId(id):
     user = Usuario.query.get_or_404(id)
@@ -56,12 +62,13 @@ def GetUserId(id):
     }
     return {"message": "success", "user": response}
 
-#TODO: fazer alguns campos serem opcionais?
+
+# TODO: fazer alguns campos serem opcionais?
 def PutUserId(data, id):
     user = Usuario.query.get_or_404(id)
-    #user.email = data['email']
-    #user.real_name = data['real_name']
-    #user.password = data['password']
+    # user.email = data['email']
+    # user.real_name = data['real_name']
+    # user.password = data['password']
     user.verificado = True
     user.sexo = data['sexo']
     user.nascimento = data['nascimento']
@@ -75,6 +82,7 @@ def PutUserId(data, id):
 
     return {"message": f"Dados de {user.user_name} atualizados"}
 
+
 def DelUserId(id):
     user = Usuario.query.get_or_404(id)
     notificacoes = Notificacoes_Conf.query.filter_by(usuario=id).first()
@@ -85,9 +93,17 @@ def DelUserId(id):
 
     return {"message": f"Dados de {user.user_name} removidos"}
 
+
 def GetVerify(username):
     user = Usuario.query.filter_by(user_name=username).first()
     if user:
-        return { "success": False, "message": "User with username '" + str(username) + "' already exists." }
+        return {"success": False, "message": "User with username '" + str(username) + "' already exists."}
     else:
-        return { "success": True, "message": "Username '" + str(username) + "' is available."}
+        return {"success": True, "message": "Username '" + str(username) + "' is available."}
+
+
+def VerifyAccess(user, accepted: list, rejected=None) -> bool:
+    if rejected is None:
+        rejected = []
+
+    return user.type in accepted and type not in rejected
