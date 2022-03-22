@@ -8,3 +8,10 @@ post_create = api.model("Post Create",
     "criador": fields.Integer(),
     "categoria": fields.Integer()
 })
+
+post_update = api.model("Post Update", {
+    "titulo": fields.String(),
+    "texto": fields.String(),
+    "categoria": fields.Integer(),
+    "selo": fields.Boolean()
+})

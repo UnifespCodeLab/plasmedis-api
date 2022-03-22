@@ -7,6 +7,10 @@ from api.model.database.users import Usuario
 from api.service.comments import GetComentariosPostagem
 from sqlalchemy import func
 
+from api.service.users import VerifyAccess
+from api.util.auth import get_authorized_user
+
+
 def PutSelo(id):
     postagem = Postagem.query.get_or_404(id)
     postagem.selo = True
@@ -16,16 +20,20 @@ def PutSelo(id):
 
     return {"message": f"Selo emitido!"}
 
+
 def PostPostagens(data):
-    new_post = Postagem(texto=data['texto'], criador=data['criador'], titulo=data['titulo'], categoria=data['categoria'])
+    new_post = Postagem(texto=data['texto'], criador=data['criador'], titulo=data['titulo'],
+                        categoria=data['categoria'])
 
     db.session.add(new_post)
     db.session.commit()
 
     return {"message": f"Postagem criada"}
 
+
 def GetPostagens():
-    postagens = Postagem.query.outerjoin(Comentario).add_columns(func.count(Comentario.id).label('comentarios')).group_by(Postagem.id).order_by(Postagem.data.desc())
+    postagens = Postagem.query.outerjoin(Comentario).add_columns(
+        func.count(Comentario.id).label('comentarios')).group_by(Postagem.id).order_by(Postagem.data.desc())
 
     # postagensWithCriador = Postagem.query.join(Usuario, Postagem.criador == Usuario.id, isouter=True).outerjoin(
     #     Comentario).add_columns(Usuario.id, Usuario.real_name, Usuario.bairro, func.count(Comentario.id).label('comentarios')).group_by(Postagem.id, Usuario.id)
@@ -35,7 +43,8 @@ def GetPostagens():
     categoria = request.args.get('categoria', None)
 
     if categoria is not None:
-        postagensWithCriador = postagens.filter(Postagem.categoria.in_(map(int, categoria.split(',')))).order_by(Postagem.data.desc())
+        postagensWithCriador = postagens.filter(Postagem.categoria.in_(map(int, categoria.split(',')))).order_by(
+            Postagem.data.desc())
 
     # if bairro is not None:
     #     postagensWithCriador = postagens.filter(Usuario.bairro.in_(map(int, bairro.split(','))))
@@ -53,8 +62,10 @@ def GetPostagens():
 
     return {"count": len(results), "post": results, "message": "success"}
 
+
 def GetRecomendados():
-    postagens = db.session.query(Postagem, func.count(Comentario.id).label('comentarios')).outerjoin(Comentario).filter(Postagem.selo == True).group_by(Postagem.id).order_by(Postagem.data.desc())
+    postagens = db.session.query(Postagem, func.count(Comentario.id).label('comentarios')).outerjoin(Comentario).filter(
+        Postagem.selo == True).group_by(Postagem.id).order_by(Postagem.data.desc())
     results = []
     for post, comentarios in postagens:
         user = Usuario.query.get_or_404(post.criador)
@@ -63,16 +74,20 @@ def GetRecomendados():
 
     return {"count": len(results), "post": results, "message": "success"}
 
+
 def GetFiltros(id_categoria):
-    postagens = db.session.query(Postagem, func.count(Comentario.id).label('comentarios')).outerjoin(Comentario).filter(Postagem.categoria == id_categoria).group_by(Postagem.id).order_by(Postagem.data.desc())
+    postagens = db.session.query(Postagem, func.count(Comentario.id).label('comentarios')).outerjoin(Comentario).filter(
+        Postagem.categoria == id_categoria).group_by(Postagem.id).order_by(Postagem.data.desc())
     results = []
     for post, comentarios in postagens:
         user = Usuario.query.get_or_404(post.criador)
         results.append(
-            {"id": post.id, "titulo": post.titulo, "texto": post.texto, "criador": user.real_name, "id_criador": user.id, "selo": post.selo,
+            {"id": post.id, "titulo": post.titulo, "texto": post.texto, "criador": user.real_name,
+             "id_criador": user.id, "selo": post.selo,
              "categoria": post.categoria, "data": post.data.strftime("%Y-%m-%dT%H:%M:%S"), "comentarios": comentarios})
 
     return {"count": len(results), "post": results, "message": "success"}
+
 
 def GetPostagensId(id):
     post = Postagem.query.filter_by(id=id).first()
@@ -86,21 +101,47 @@ def GetPostagensId(id):
             "id": post_user.id,
             "name": post_user.real_name
         },
-        "selo":post.selo,
-        "categoria":post.categoria,
+        "selo": post.selo,
+        "categoria": post.categoria,
         "data": post.data.strftime("%Y-%m-%dT%H:%M:%S"),
         "comentarios": comments['comments']
     }
     return result
 
+
+def UpdatePostagem(id, data):
+    # Pega a postagem pelo ‘id’
+    post = Postagem.query.filter_by(id=id).first()
+
+    # Busca o usuário pelo token
+    user = Usuario.query.get(get_authorized_user())
+
+    # Verifica se o usuário possui permissão para editar a postagem
+    if user.id == post.criador and not VerifyAccess(user, [1, 2]):
+        # Atualiza os dados da postagem
+        post.titulo = data['titulo']
+        post.texto = data['texto']
+
+        if VerifyAccess(user, [1, 2]):
+            post.selo = data['selo']
+            post.categoria = data['categoria']
+    else:
+        return {"message": "Usuário não tem permissão para editar esta postagem"}, 403
+
+    # Salva as alterações
+    db.session.commit()
+
+    return {"message": "success"}
+
+
 def GetListaPostagens(id):
-    try :
+    try:
         postagens = Postagem.query.order_by(Postagem.data.desc()).all()
         user = Usuario.query.get_or_404(id)
         results = []
         for post in postagens:
             if post.criador == user.id:
-                results.append({"titulo": post.titulo,"texto": post.texto,"criador": user.real_name})
+                results.append({"titulo": post.titulo, "texto": post.texto, "criador": user.real_name})
 
         return {"count": len(results), "post": results, "message": "success"}
     except:

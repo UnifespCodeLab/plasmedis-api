@@ -1,6 +1,7 @@
 from flask_cors import cross_origin
 from api.util.decorators import required
-from api.service.posts import PutSelo, GetPostagens, PostPostagens, GetRecomendados, GetFiltros, GetPostagensId, GetListaPostagens
+from api.service.posts import PutSelo, GetPostagens, PostPostagens, GetRecomendados, GetFiltros, GetPostagensId, \
+    GetListaPostagens, UpdatePostagem
 from api import api
 from flask_restx import Resource
 import api.model.request.posts as request
@@ -48,6 +49,11 @@ class PostsId(Resource):
     @required(response=response.post_comments, token=True)
     def get(self, id):
         return GetPostagensId(id)
+
+    @cross_origin(origin='*', headers=['Content-Type', 'Authorization'])
+    @required(response=default.message, request=request.post_update, token=True)
+    def put(self, id, data):
+        return UpdatePostagem(id, data)
 
 @posts.route("/user/<int:id>")
 class UserPosts(Resource):
