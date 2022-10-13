@@ -22,4 +22,4 @@ FROM base as prod
 # Production image
 RUN pip install gunicorn
 COPY . .
-CMD ["gunicorn", "--reload", "--bind", "0.0.0.0:5000", "app:app"]1
+CMD ["gunicorn", "--reload", "--bind", "0.0.0.0:5000", "app:app"]
