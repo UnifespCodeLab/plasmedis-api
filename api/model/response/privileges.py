@@ -9,5 +9,4 @@ privileges = api.model("Privileges", {
 privileges_list = api.model("Privileges List", {
     "count": fields.Integer,
     "privileges": fields.List(fields.Nested(privileges)),
-    "success": fields.Boolean
 })
