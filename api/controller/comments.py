@@ -23,14 +23,14 @@ class Comments(Resource):
     def post(self, data):
         id = Create(data, get_authorized_user())
 
-        return {"message": f"Comentário {id} registrado"}
+        return {"message": f"Comentário {id} registrado"}, 200
 
     @cross_origin(origin='*', headers=['Content-Type', 'Authorization'])
     @required(response=response.comment_list, token=True)
     def get(self):
         results = All()
 
-        return {"count": len(results), "comments": results, "success": True}
+        return {"count": len(results), "comments": results}, 200
 
 
 @comments.route("/post/<int:id>")
@@ -40,7 +40,7 @@ class CommentsPost(Resource):
     def get(self, id):
         results = ByPost(id)
 
-        return {"success": True, "count": len(results), "comments": results}
+        return {"count": len(results), "comments": results}, 200
 
 
 @comments.route("/<int:id>")
@@ -51,8 +51,8 @@ class CommentsId(Resource):
         try:
             Remove(id, get_authorized_user())
 
-            return {"message": f"Comentário {id} removido com sucesso"}
+            return {"message": f"Comentário {id} removido com sucesso"}, 200
         except MessagedError as e:
             # erro geral, que possui alguma mensagem especifica
             # nesse caso, informar a mensagem ed erro pro usuario E um status code 500 INTERNAL SERVER ERROR
-            return {"message": e.message}
+            return {"message": e.message}, 500
