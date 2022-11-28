@@ -20,11 +20,10 @@ settings = api.namespace('settings', description="Settings namespace")
 @settings.route("/<string:type>")
 class Settings(Resource):
     @cross_origin(origin='*', headers=['Content-Type', 'Authorization'])
-    @token_required
+    @required(response=response.settings_response, token=True)
     def get(self, type):
         if type not in ['web', 'api']:
-            return {"success": False, "message": f"Não existe uma configuração para \"{type}\""}
+            return {"message": f"Não existe uma configuração para \"{type}\""}, 404
 
         data = ByType(type)
-
-        return {"success": True, "message": "Recuperando configuração atual", "settings": data}
+        return {"message": "Recuperando configuração atual", "settings": data}, 200
