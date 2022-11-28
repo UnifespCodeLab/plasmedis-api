@@ -29,7 +29,7 @@ class Login(Resource):
         # retorna um marcador de versão, para quando as mudanças no token forem tão significativas que o único
         # jeito de atualizar algo no front vai ser matando a sessão atual do usuário
 
-        return {'version': AUTH_VERSION}
+        return {'version': AUTH_VERSION}, 200
 
     @cross_origin(origin='*', headers=['Content-Type', 'Authorization'])
     @required(response=response.login_response, request=request.credentials, token=False)
@@ -50,9 +50,9 @@ class Login(Resource):
                 'aud': req.args.get('aud', 'unknown')
             }, app.config['SECRET_KEY'], algorithm="HS256")
 
-            return {"status": 1000, "user": user, "token": token}  # Valido
+            return {"user": user, "token": token}, 200  # Valido
 
-        return {"status": 1010}  # Invalido
+        return {"user": user, "token": None}, 404  # Invalido
 
 
 @auth.route("/recover")
@@ -68,27 +68,30 @@ class Recover(Resource):
         #       repetindo codigo sem necessidade
         try:
             RecoverPassword(username, email)
+
+            return {"message": "Senha alterada. Verifique o email para mais informações"}, 200
         except NotFoundError as e:
             # erro especifico para quando não existe uma entrada para a chave informada
             #       nesse caso, nao existe um usuario com o username/email informados
             # então deveria ser informada a mensagem do erro pro usuário E um status code 404 NOT FOUND
-            return {"message": e.message}
+            return {"message": e.message}, 404
         except ForbiddenError as e:
             # erro especifico para quando a operação não é permitida por algum motivo
             #       nesse caso, a senha do admin nao pode ser resetada
             # então deveria ser informada a mensagem do erro pro usuário E um status code 403 FORBIDDEN
-            return {"message": e.message}
+            return {"message": e.message}, 403
         except MessagedError as e:
             # erro geral, que possui alguma mensagem especifica
             # nesse caso, informar a mensagem ed erro pro usuario E um status code 500 INTERNAL SERVER ERROR
-            return {"message": e.message}
+            return {"message": e.message}, 500
 
 
 @auth.route('/me')
 class Me(Resource):
     @cross_origin(origin='*', headers=['Content-Type', 'Authorization'])
-    # @required(response=response.me, token=True)
-    @token_required
+    @required(response=response.me, token=True)
     def get(self):
         # arg data: if response should include data field
-        return ById(get_authorized_user().id, get_boolean_arg("data"))
+        user = ById(get_authorized_user().id, get_boolean_arg("data"))
+
+        return {"user": user}, 200

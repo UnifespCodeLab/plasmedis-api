@@ -6,7 +6,6 @@ from api.model.response.users import user, user_complete
 
 
 login_response = api.model("Login Response", {
-    "status": fields.Integer,
     "user": fields.Nested(user, allow_null=True),
     "token": fields.String()
 })
