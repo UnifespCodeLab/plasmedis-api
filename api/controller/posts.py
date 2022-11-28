@@ -26,14 +26,14 @@ class Posts(Resource):
                       categories=get_integer_list_arg('category'),
                       creators=get_integer_list_arg('creator'))
 
-        return {"count": len(results), "posts": results, "success": True}
+        return {"count": len(results), "posts": results}, 200
 
     @cross_origin(origin='*', headers=['Content-Type', 'Authorization'])
     @required(response=default.message, request=request.post_create, token=True)
     def post(self, data):
         id = Create(data, get_authorized_user())
 
-        return {"message": f"Postagem {id} criada"}
+        return {"message": f"Postagem {id} criada"}, 200
 
 
 @posts.route("/<int:id>")
@@ -41,7 +41,7 @@ class PostsId(Resource):
     @cross_origin(origin='*', headers=['Content-Type', 'Authorization'])
     @required(response=response.post_complete_with_comments, token=True)
     def get(self, id):
-        return ById(id)
+        return ById(id), 200
 
     @cross_origin(origin='*', headers=['Content-Type', 'Authorization'])
     @required(response=default.message, token=True)
@@ -49,11 +49,11 @@ class PostsId(Resource):
         try:
             Remove(id, get_authorized_user())
 
-            return {"message": f"Postagem {id} removida com sucesso"}
+            return {"message": f"Postagem {id} removida com sucesso"}, 200
         except MessagedError as e:
             # erro geral, que possui alguma mensagem especifica
             # nesse caso, informar a mensagem ed erro pro usuario E um status code 500 INTERNAL SERVER ERROR
-            return {"message": e.message}
+            return {"message": e.message}, 500
 
 
 @posts.route("/<int:id>/stamp")
@@ -63,14 +63,14 @@ class Stamp(Resource):
     def put(self, id):
         UpdateStamp(id, True, get_authorized_user())
 
-        return {"message": f"Selo emitido!"}
+        return {"message": f"Selo emitido!"}, 200
 
     @cross_origin(origin='*', headers=['Content-Type', 'Authorization'])
     @required(response=default.message, token=True)
     def delete(self, id):
         UpdateStamp(id, False, get_authorized_user())
 
-        return {"message": f"Selo removido!"}
+        return {"message": f"Selo removido!"}, 200
 
 
 @posts.route("/category/<int:id>")
@@ -80,7 +80,7 @@ class Filter(Resource):
     def get(self, id):
         results = All(categories=[id])
 
-        return {"count": len(results), "posts": results, "success": True}
+        return {"count": len(results), "posts": results}, 200
 
 
 @posts.route("/user/<int:id>")
@@ -90,4 +90,4 @@ class UserPosts(Resource):
     def get(self, id):
         results = All(creators=[id])
 
-        return {"count": len(results), "posts": results, "success": True}
+        return {"count": len(results), "posts": results}, 200
