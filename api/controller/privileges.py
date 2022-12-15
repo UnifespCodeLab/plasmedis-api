@@ -22,11 +22,11 @@ class Privileges(Resource):
     def get(self):
         results = All()
 
-        return {"count": len(results), "privileges": results, "success": True}
+        return {"count": len(results), "privileges": results}, 200
 
     @cross_origin(origin='*', headers=['Content-Type', 'Authorization'])
     @required(response=default.message, request=request.privileges, token=True)
     def post(self, data):
         new_id = Create(data, get_authorized_user())
 
-        return {"message": f"Privilégio {new_id} criado com sucesso"}
+        return {"message": f"Privilégio {new_id} criado com sucesso"}, 200

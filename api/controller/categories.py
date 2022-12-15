@@ -27,14 +27,14 @@ class Forms(Resource):
     def post(self, data):
         id = Create(data, get_authorized_user())
 
-        return {"message": f"Categoria {id} criada com sucesso"}
+        return {"message": f"Categoria {id} criada com sucesso"}, 200
     
     @cross_origin(origin='*', headers=['Content-Type', 'Authorization'])
     @required(response=response.category_list, token=True)
     def get(self):
         categorias = All()
 
-        return {"count": len(categorias), "categories": categorias, "success": True}
+        return {"count": len(categorias), "categories": categorias}, 200
 
 
 @categories.route("/<int:id>")
@@ -54,11 +54,11 @@ class CategoriesId(Resource):
             category = Remove(id, replacement, get_authorized_user())
 
             if replacement is None:
-                return {"message": f"Categoria \"{category['name']}\" ({id}) removida com sucesso"}
+                return {"message": f"Categoria \"{category['name']}\" ({id}) removida com sucesso"}, 200
             else:
                 replacementCategory = ById(replacement)
-                return {"message": f"Categoria \"{category['name']}\" ({id}) removida com sucesso (e substituida por \"{replacementCategory['name']}\")"}
+                return {"message": f"Categoria \"{category['name']}\" ({id}) removida com sucesso (e substituida por \"{replacementCategory['name']}\")"}, 200
         except MessagedError as e:
             # erro geral, que possui alguma mensagem especifica
             # nesse caso, informar a mensagem ed erro pro usuario E um status code 500 INTERNAL SERVER ERROR
-            return {"message": e.message}
+            return {"message": e.message}, 500

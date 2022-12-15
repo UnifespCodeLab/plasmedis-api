@@ -12,32 +12,27 @@ user = api.model("User", {
     "has_accepted_terms": fields.Boolean
 })
 
-user_data = api.schema_model("User Data", {
-    # 'required': ['address'],
-    'properties': {
-      'genero': {'type': 'string'},
-      'nascimento': {'type': 'date'},
-      'area_atuacao': {'type': 'string'},
-      'instituicao': {'type': 'string'},
-      'campus': {'type': 'string'},
-      'setor': {'type': 'string'},
-      'deficiencia': {'type': 'boolean'},
-      'parente_com_tea': {'type': 'boolean'},
-      'freq_convivio_tea': {'type': 'string'},
-      'qtd_alunos_tea': {'type': 'integer'},
-      'tempo_trabalho_tea': {'type': 'integer'},
-      'qtd_pacientes_tea_ano': {'type': 'integer'},
-    },
-    'type': 'object'
+user_data = api.model("User Data", {
+    'genero': fields.String,
+    'nascimento': fields.Date,
+    'area_atuacao': fields.String,
+    'instituicao': fields.String,
+    'campus': fields.String,
+    'setor': fields.String,
+    'deficiencia': fields.Boolean,
+    'parente_com_tea': fields.Boolean,
+    'freq_convivio_tea': fields.String,
+    'qtd_alunos_tea': fields.Integer,
+    'tempo_trabalho_tea': fields.Integer,
+    'qtd_pacientes_tea_ano': fields.Integer,
 })
 
-user_complete = api.inherit("User Complete", user, {
+user_with_data = api.inherit("User with Data", user, {
     "data": fields.Nested(user_data, allow_null=True)
 })
 
-user_message = api.model("User Message", {
-    "success": fields.Boolean(),
-    "user": fields.Nested(user_complete)
+user_complete = api.model("User Complete", {
+    "user": fields.Nested(user_with_data)
 })
 
 users_list = api.model("Users List", {

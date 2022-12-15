@@ -13,7 +13,6 @@ comment = api.model("Comment", {
 })
 
 comment_list = api.model("Comment List", {
-    "success": fields.Boolean(),
     "count": fields.Integer(),
     "comments": fields.List(fields.Nested(comment)),
 })

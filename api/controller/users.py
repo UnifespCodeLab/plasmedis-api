@@ -24,7 +24,7 @@ class User(Resource):
     def get(self):
         users = All(not get_boolean_arg("inactive"), get_string_list_arg("email"), get_string_list_arg("username"))
 
-        return {"count": len(users), "users": users, "message": "success"}
+        return {"count": len(users), "users": users}, 200
 
     @cross_origin(origin='*', headers=['Content-Type', 'Authorization'])
     @required(response=response.user_create_message, request=request.user_create, token=True)
@@ -32,20 +32,19 @@ class User(Resource):
         try:
             id = Create(data, get_authorized_user())
         except MessagedError as e:
-            return {"success": False, "message": e.message}
+            return {"message": e.message}, 500
 
-        return {"success": True, "message": f"Usuario criado", "user": id}
+        return {"message": f"Usuario criado", "user": id}, 200
 
 
 @users.route('/<int:id>')
 class UserId(Resource):
     @cross_origin(origin='*', headers=['Content-Type', 'Authorization'])
-    # @required(response=response.user_message, token=True)
-    @token_required
+    @required(response=response.user_complete, token=True)
     def get(self, id):
         user = ById(id, get_boolean_arg("with_data", False))
 
-        return {"success": True, "user": user}
+        return {"user": user}, 200
 
     @cross_origin(origin='*', headers=['Content-Type', 'Authorization'])
     @required(response=default.message, request=request.user_update, token=True)
@@ -53,11 +52,11 @@ class UserId(Resource):
         try:
             user = UpdateById(id, data, get_authorized_user())
 
-            return {"message": f"Dados de {user['username']} atualizados"}
+            return {"message": f"Dados de {user['username']} atualizados"}, 200
         except MessagedError as e:
             # erro geral, que possui alguma mensagem especifica
             # nesse caso, informar a mensagem ed erro pro usuario E um status code 500 INTERNAL SERVER ERROR
-            return {"message": e.message}
+            return {"message": e.message}, 500
 
     @cross_origin(origin='*', headers=['Content-Type', 'Authorization'])
     @required(response=default.message, token=True)
@@ -65,21 +64,21 @@ class UserId(Resource):
         try:
             user = Remove(id, get_authorized_user())
 
-            return {"message": f"Dados de {user['username']} removidos"}
+            return {"message": f"Dados de {user['username']} removidos"}, 200
         except MessagedError as e:
             # erro geral, que possui alguma mensagem especifica
             # nesse caso, informar a mensagem ed erro pro usuario E um status code 500 INTERNAL SERVER ERROR
-            return {"message": e.message}
+            return {"message": e.message}, 500
 
 
 @users.route("/verify/<string:username>")
 class Verify(Resource):
     @cross_origin(origin='*', headers=['Content-Type', 'Authorization'])
-    @required(response=default.success_message, token=True)
+    @required(response=default.message, token=True)
     def get(self, username):
         exists = VerifyUsername(username)
 
         if exists:
-            return {"success": False, "message": f"Usuário '{username}' já existe."}
+            return {"message": f"Usuário '{username}' já existe."}, 400
         else:
-            return {"success": True, "message": f"Nome de usuário '{username}' esta disponível."}
+            return {"message": f"Nome de usuário '{username}' esta disponível."}, 200

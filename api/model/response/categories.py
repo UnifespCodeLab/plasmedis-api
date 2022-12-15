@@ -8,7 +8,6 @@ category = api.model("Category", {
 })
 
 category_list = api.model("Category List", {
-    "success": fields.Boolean(),
     "count": fields.Integer(),
     "categories": fields.List(fields.Nested(category))
 })
