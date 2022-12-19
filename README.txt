@@ -12,3 +12,10 @@
 - Executar: ```docker-compose up flask-api```
 
 - Verificar: ```http://172.18.0.2:8000/```
+
+
+## Para montar a imagem e subir no GCP
+
+- docker build -t eu.gcr.io/emtu-371421/plasmedis-api:0.1 .
+
+- docker push eu.gcr.io/emtu-371421/plasmedis-api:0.1
