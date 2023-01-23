@@ -37,6 +37,10 @@ user_complete = api.model("User Complete", {
 
 users_list = api.model("Users List", {
     "count": fields.Integer(),
+    "current": fields.Integer(),
+    "limit": fields.Integer(),
+    "previous": fields.String(),
+    "next": fields.String(),
     "users": fields.List(fields.Nested(user))
 })
 

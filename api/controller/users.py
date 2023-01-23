@@ -5,7 +5,8 @@ from flask_restx import Resource
 from api import api
 from api.util.decorators import required, token_required
 from api.util.auth import get_authorized_user
-from api.util.request import get_boolean_arg, get_string_list_arg
+from api.util.request import get_boolean_arg, get_string_list_arg, get_pagination_arg
+from api.util.response import get_paginated_list
 from api.util.errors import MessagedError
 
 from api.service.users import All, VerifyUsername, Create, ById, UpdateById, Remove
@@ -24,7 +25,13 @@ class User(Resource):
     def get(self):
         users = All(not get_boolean_arg("inactive"), get_string_list_arg("email"), get_string_list_arg("username"))
 
-        return {"count": len(users), "users": users}, 200
+        page, limit = get_pagination_arg()
+        base_url = f"/users?inactive={get_boolean_arg('inactive')}"
+        users_page = get_paginated_list("users", users, base_url, page, limit)
+
+        if 'users' in users_page:
+            return users_page, 200
+        return users_page, 400
 
     @cross_origin(origin='*', headers=['Content-Type', 'Authorization'])
     @required(response=response.user_create_message, request=request.user_create, token=True)

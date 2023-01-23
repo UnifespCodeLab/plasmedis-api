@@ -23,3 +23,10 @@ def get_string_list_arg(name, default=None):
         return default
 
     return value.split(',')
+
+
+def get_pagination_arg(default_page=1, default_limit=10):
+    page = req.args.get("page", default_page)
+    limit = req.args.get("limit", default_limit)
+
+    return map(int, [page, limit])
