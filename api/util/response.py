@@ -6,17 +6,11 @@ def get_paginated_list(result_field_name, all_entries, url, page, limit):
 
     previous_url = ''
     if start > 1:
-        if '?' in url:
-            previous_url = url + f"&page={page - 1}&limit={limit}"
-        else:
-            previous_url = url + f"?page={page - 1}&limit={limit}"
+        previous_url = url + f"page={page - 1}&limit={limit}"
 
     next_url = ''
     if start + limit <= count:
-        if '?' in url:
-            next_url = url + f"&page={page + 1}&limit={limit}"
-        else:
-            next_url = url + f"?page={page + 1}&limit={limit}"
+        next_url = url + f"page={page + 1}&limit={limit}"
 
     return {'count': count, 'current': page, 'limit': limit, 'previous': previous_url, 'next': next_url,
             result_field_name: all_entries[(start - 1):(start - 1 + limit)]}

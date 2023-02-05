@@ -25,6 +25,14 @@ def get_string_list_arg(name, default=None):
     return value.split(',')
 
 
+def get_path_without_pagination_args():
+    path = req.path + '?'
+    for arg in req.args.keys():
+        if arg not in ['page', 'limit']:
+            path += f'{arg}={req.args.get(arg)}&'
+
+    return path
+
 def get_pagination_arg(default_page=1, default_limit=10):
     page = req.args.get("page", default_page)
     limit = req.args.get("limit", default_limit)
