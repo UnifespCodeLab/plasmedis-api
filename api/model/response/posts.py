@@ -41,5 +41,9 @@ post_complete_with_comments = api.inherit("Post Complete With Comments", post_co
 
 post_complete_list = api.model("Post Complete List", {
     "count": fields.Integer(),
+    "current": fields.Integer(),
+    "limit": fields.Integer(),
+    "previous": fields.String(),
+    "next": fields.String(),
     "posts": fields.List(fields.Nested(post_complete))
 })
