@@ -1,7 +1,7 @@
 def get_paginated_list(result_field_name, all_entries, url, page, limit):
     count = len(all_entries)
     start = limit * (page - 1) + 1
-    if start > count or limit < 1 or page < 1:
+    if (start > count or limit < 1 or page < 1) and count != 0:
         return {}
 
     previous_url = ''
