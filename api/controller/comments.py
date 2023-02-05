@@ -5,6 +5,8 @@ from api import api
 
 from api.util.decorators import required
 from api.util.auth import get_authorized_user
+from api.util.request import get_path_without_pagination_args, get_pagination_arg
+from api.util.response import get_paginated_list
 
 from api.service.comments import All, ByPost, Create, Remove
 
@@ -30,7 +32,13 @@ class Comments(Resource):
     def get(self):
         results = All()
 
-        return {"count": len(results), "comments": results}, 200
+        page, limit = get_pagination_arg()
+        path = get_path_without_pagination_args()
+        comments_page = get_paginated_list("comments", results, path, page, limit)
+
+        if 'comments' in comments_page:
+            return comments_page, 200
+        return comments_page, 400
 
 
 @comments.route("/post/<int:id>")
@@ -40,7 +48,13 @@ class CommentsPost(Resource):
     def get(self, id):
         results = ByPost(id)
 
-        return {"count": len(results), "comments": results}, 200
+        page, limit = get_pagination_arg()
+        path = get_path_without_pagination_args()
+        comments_page = get_paginated_list("comments", results, path, page, limit)
+
+        if 'comments' in comments_page:
+            return comments_page, 200
+        return comments_page, 400
 
 
 @comments.route("/<int:id>")
