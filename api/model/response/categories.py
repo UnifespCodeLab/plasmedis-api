@@ -9,5 +9,9 @@ category = api.model("Category", {
 
 category_list = api.model("Category List", {
     "count": fields.Integer(),
+    "current": fields.Integer(),
+    "limit": fields.Integer(),
+    "previous": fields.String(),
+    "next": fields.String(),
     "categories": fields.List(fields.Nested(category))
 })
