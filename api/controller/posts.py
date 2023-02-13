@@ -5,7 +5,8 @@ from api import api
 
 from api.util.decorators import required
 from api.util.errors import MessagedError
-from api.util.request import get_integer_list_arg, get_boolean_arg
+from api.util.request import get_integer_list_arg, get_boolean_arg, get_path_without_pagination_args, get_pagination_arg
+from api.util.response import get_paginated_list
 from api.util.auth import get_authorized_user
 
 from api.service.posts import All, ById, Create, UpdateStamp, Remove
@@ -26,7 +27,13 @@ class Posts(Resource):
                       categories=get_integer_list_arg('category'),
                       creators=get_integer_list_arg('creator'))
 
-        return {"count": len(results), "posts": results}, 200
+        page, limit = get_pagination_arg()
+        path = get_path_without_pagination_args()
+        posts_page = get_paginated_list("posts", results, path, page, limit)
+
+        if 'posts' in posts_page:
+            return posts_page, 200
+        return posts_page, 400
 
     @cross_origin(origin='*', headers=['Content-Type', 'Authorization'])
     @required(response=default.message, request=request.post_create, token=True)
@@ -80,7 +87,13 @@ class Filter(Resource):
     def get(self, id):
         results = All(categories=[id])
 
-        return {"count": len(results), "posts": results}, 200
+        page, limit = get_pagination_arg()
+        path = get_path_without_pagination_args()
+        posts_page = get_paginated_list("posts", results, path, page, limit)
+
+        if 'posts' in posts_page:
+            return posts_page, 200
+        return posts_page, 400
 
 
 @posts.route("/user/<int:id>")
@@ -90,4 +103,11 @@ class UserPosts(Resource):
     def get(self, id):
         results = All(creators=[id])
 
-        return {"count": len(results), "posts": results}, 200
+        page, limit = get_pagination_arg()
+        path = get_path_without_pagination_args()
+        posts_page = get_paginated_list("posts", results, path, page, limit)
+
+        if 'posts' in posts_page:
+            return posts_page, 200
+        return posts_page, 400
+    

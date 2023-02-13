@@ -8,6 +8,8 @@ from api import api
 
 from api.util.decorators import required
 from api.util.auth import get_authorized_user
+from api.util.request import get_path_without_pagination_args, get_pagination_arg
+from api.util.response import get_paginated_list
 
 from api.service.categories import All, ById, Create, Remove
 
@@ -34,7 +36,13 @@ class Forms(Resource):
     def get(self):
         categorias = All()
 
-        return {"count": len(categorias), "categories": categorias}, 200
+        page, limit = get_pagination_arg()
+        path = get_path_without_pagination_args()
+        categories_page = get_paginated_list("categories", categorias, path, page, limit)
+
+        if 'categories' in categories_page:
+            return categories_page, 200
+        return categories_page, 400
 
 
 @categories.route("/<int:id>")

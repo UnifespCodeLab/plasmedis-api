@@ -3,6 +3,8 @@ from flask_restx import Resource
 
 from api import api
 from api.util.auth import get_authorized_user
+from api.util.request import get_path_without_pagination_args, get_pagination_arg
+from api.util.response import get_paginated_list
 
 from api.util.decorators import required
 
@@ -22,7 +24,13 @@ class Privileges(Resource):
     def get(self):
         results = All()
 
-        return {"count": len(results), "privileges": results}, 200
+        page, limit = get_pagination_arg()
+        path = get_path_without_pagination_args()
+        privileges_page = get_paginated_list("privileges", results, path, page, limit)
+
+        if 'privileges' in privileges_page:
+            return privileges_page, 200
+        return privileges_page, 400
 
     @cross_origin(origin='*', headers=['Content-Type', 'Authorization'])
     @required(response=default.message, request=request.privileges, token=True)

@@ -14,5 +14,9 @@ comment = api.model("Comment", {
 
 comment_list = api.model("Comment List", {
     "count": fields.Integer(),
+    "current": fields.Integer(),
+    "limit": fields.Integer(),
+    "previous": fields.String(),
+    "next": fields.String(),
     "comments": fields.List(fields.Nested(comment)),
 })
