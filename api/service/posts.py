@@ -49,7 +49,6 @@ def ById(id):
     result = {
         **post.serialize(metadata=True),
         "comments_count": len(comments),
-        "comments": comments
     }
 
     return result

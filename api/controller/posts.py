@@ -46,7 +46,7 @@ class Posts(Resource):
 @posts.route("/<int:id>")
 class PostsId(Resource):
     @cross_origin(origin='*', headers=['Content-Type', 'Authorization'])
-    @required(response=response.post_complete_with_comments, token=True)
+    @required(response=response.post_complete, token=True)
     def get(self, id):
         return ById(id), 200
 

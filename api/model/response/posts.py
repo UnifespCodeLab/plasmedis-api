@@ -35,10 +35,6 @@ comment = api.model("Post Comment", {
     "created": fields.Nested(created)
 })
 
-post_complete_with_comments = api.inherit("Post Complete With Comments", post_complete, {
-    "comments": fields.List(fields.Nested(comment)),
-})
-
 post_complete_list = api.model("Post Complete List", {
     "count": fields.Integer(),
     "current": fields.Integer(),
