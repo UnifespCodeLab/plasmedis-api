@@ -140,5 +140,7 @@ CREATE TABLE settings (
     version VARCHAR(10) NOT NULL,
 
     web JSON DEFAULT NULL,
-    api JSON DEFAULT NULL
+    api JSON DEFAULT NULL,
+
+    user_data JSON DEFAULT NULL
 );
