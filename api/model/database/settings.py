@@ -10,6 +10,7 @@ class Settings(db.Model):
 
     web = db.Column(db.JSON(), nullable=True)
     api = db.Column(db.JSON(), nullable=True)
+    user_data = db.Column(db.JSON(), nullable=True)
 
     def update(self, data):
         for key in data:
@@ -20,5 +21,6 @@ class Settings(db.Model):
             "id": self.id,
             "active": self.active,
             "web": self.web,
-            "api": self.api
+            "api": self.api,
+            "user_data": self.user_data
         }

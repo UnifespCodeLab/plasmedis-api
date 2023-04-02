@@ -1,7 +1,6 @@
 from api import api
 from flask_restx import fields
 
-
 visible = api.model("Visibility", {
     "/categorias": fields.Boolean()
 })
