@@ -34,13 +34,27 @@ def ByType(type: str):
     
 def createUserData(data):
     settings = Settings.query.get_or_404(data['settings_id'])
+    if len(settings.user_data):
+        return ""
     settings.user_data = data['user_data']
 
     UpdateMetadata(settings, -1)
 
     db.session.add(settings)
     db.session.commit()
-    return(settings)
+    return settings
+
+def updateUserData(data):
+    settings = Settings.query.get_or_404(data['settings_id'])
+    if len(settings.user_data) <= 0:
+        return ""
+    settings.user_data = data['user_data']
+
+    UpdateMetadata(settings, -1)
+
+    db.session.add(settings)
+    db.session.commit()
+    return settings
 
 
 def findUserDataById(settings_id):
@@ -54,11 +68,11 @@ def findUserDataById(settings_id):
 def deleteUserData(settings_id):
     settings = Settings.query.get_or_404(settings_id)
     
-    settings.user_data = "";
+    settings.user_data = ""
 
     UpdateMetadata(settings, -1)
 
     db.session.add(settings)
     db.session.commit()
     
-    return(settings)
+    return settings
