@@ -15,6 +15,7 @@ DROP TABLE IF EXISTS settings;
 DROP TABLE IF EXISTS comentarios;
 DROP TABLE IF EXISTS postagens;
 DROP TABLE IF EXISTS categorias;
+DROP TABLE IF EXISTS usuario_online;
 DROP TABLE IF EXISTS usuarios;
 DROP TABLE IF EXISTS privilegios;
 
@@ -148,8 +149,11 @@ CREATE TABLE settings (
 CREATE TABLE usuario_online (
     id INTEGER NOT NULL GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
 
-    online_date TIMESTAMP WITHOUT TIME ZONE NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    last_access TIMESTAMP WITHOUT TIME ZONE NOT NULL DEFAULT CURRENT_TIMESTAMP,
 
-    FOREIGN KEY (online_user) REFERENCES usuarios (id)
-    
+    last_endpoint TEXT NOT NULL,
+
+    online_user INTEGER NOT NULL,
+
+    FOREIGN KEY (online_user) REFERENCES usuarios (id) 
 );
