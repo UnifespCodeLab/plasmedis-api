@@ -82,7 +82,7 @@ def UpdateById(id, data, updater):
     is_updated_mod = VerifyAccess(updater, [MODERADOR])
     user = Usuario.query.get_or_404(id)
 
-    if not is_updated_mod and is_updated_admin and updater.id != id:
+    if updater.id != id and not is_updated_admin:
         raise ForbiddenError("O usuário não tem autorização para essa ação")
 
     schema = ["name", "has_accepted_terms", "data"]
