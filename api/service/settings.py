@@ -4,7 +4,7 @@ from api import db
 
 from api.model.database.settings import Settings
 
-from api.service.metadata import CreateMetadata, SerializeMetadata
+from api.service.metadata import CreateMetadata, SerializeMetadata, UpdateMetadata
 from api.service.privileges import ADMINISTRADOR
 from api.service.users import VerifyAccess
 
@@ -31,4 +31,48 @@ def ByType(type: str):
         "id": active.id,
         "visible": visible
     }
+    
+def createUserData(data):
+    settings = Settings.query.get_or_404(data['settings_id'])
+    if len(settings.user_data):
+        return ""
+    settings.user_data = data['user_data']
 
+    UpdateMetadata(settings, -1)
+
+    db.session.add(settings)
+    db.session.commit()
+    return settings
+
+def updateUserData(data):
+    settings = Settings.query.get_or_404(data['settings_id'])
+    if len(settings.user_data) <= 0:
+        return ""
+    settings.user_data = data['user_data']
+
+    UpdateMetadata(settings, -1)
+
+    db.session.add(settings)
+    db.session.commit()
+    return settings
+
+
+def findUserDataById(settings_id):
+    settings = Settings.query.get_or_404(settings_id)
+        
+    return{
+        "user_data" : settings.user_data
+    }
+
+
+def deleteUserData(settings_id):
+    settings = Settings.query.get_or_404(settings_id)
+    
+    settings.user_data = ""
+
+    UpdateMetadata(settings, -1)
+
+    db.session.add(settings)
+    db.session.commit()
+    
+    return settings
