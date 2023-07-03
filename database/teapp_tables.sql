@@ -17,6 +17,7 @@ DROP TABLE IF EXISTS postagens;
 DROP TABLE IF EXISTS categorias;
 DROP TABLE IF EXISTS usuarios;
 DROP TABLE IF EXISTS privilegios;
+DROP TABLE IF EXISTS avatar;
 
 --
 -- USUARIOS
@@ -32,6 +33,13 @@ CREATE TABLE privilegios (
     updated_date TIMESTAMP WITHOUT TIME ZONE NOT NULL DEFAULT CURRENT_TIMESTAMP,
     updated_user INTEGER NOT NULL
     -- creation/update
+);
+
+
+CREATE TABLE avatars (
+    id INTEGER NOT NULL GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+    avatar BYTEA NOT NULL,
+    standard BOOLEAN NOT NULL DEFAULT FALSE
 );
 
 CREATE TABLE usuarios (
@@ -62,8 +70,12 @@ CREATE TABLE usuarios (
     created_date TIMESTAMP WITHOUT TIME ZONE NOT NULL DEFAULT CURRENT_TIMESTAMP,
     created_user INTEGER NOT NULL,
     updated_date TIMESTAMP WITHOUT TIME ZONE NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    updated_user INTEGER NOT NULL
+    updated_user INTEGER NOT NULL,
     -- creation/update
+
+    avatar_id INTEGER NOT NULL,
+
+    FOREIGN KEY (avatar_id) REFERENCES avatars (id)
 );
 
 --
