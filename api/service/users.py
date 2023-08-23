@@ -1,4 +1,5 @@
 from api import db
+from api.model.database.avatar import Avatar
 from api.model.database.users import Usuario
 
 from api.service.metadata import SerializeMetadata, CreateMetadata, UpdateMetadata
@@ -27,7 +28,8 @@ def All(active_only=True, email=None, username=None):
 
 
 def ById(id, include_data=False):
-    user = Usuario.query.get_or_404(id)
+
+    user = Usuario.query.join(Avatar).filter(Usuario.id == id).first_or_404()
 
     # da pra diminuir o tamanho da resposta só mandando "data" quando for necessário
     #   (já que pode ser relativamente grande dependendo do "fork")
@@ -61,7 +63,7 @@ def Create(data, creator):
     if not has_username_or_email:
         raise BadFormatError("Usuário deve possuir um email ou nome de usuário")
 
-    new_user = Usuario(type=data.get('type', 3), password=data['password'], name=data['name'])
+    new_user = Usuario(type=data.get('type', 3), password=data['password'], name=data['name'], avatar_id = data['avatar_id'])
 
     if "email" in data:
         new_user.email = data['email']

@@ -1,6 +1,10 @@
 from api import api
 from flask_restx import fields
 
+avatar_data = api.model("Avatar", {
+    "avatar": fields.String,
+})
+
 user = api.model("User", {
     "id": fields.Integer,
     "type": fields.Integer,
@@ -9,7 +13,8 @@ user = api.model("User", {
     "username": fields.String,
     "name": fields.String,
     "has_data": fields.Boolean,
-    "has_accepted_terms": fields.Boolean
+    "has_accepted_terms": fields.Boolean,
+    "avatar_data": fields.Nested(avatar_data)
 })
 
 user_data = api.model("User Data", {

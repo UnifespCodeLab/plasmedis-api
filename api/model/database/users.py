@@ -1,4 +1,5 @@
 from api import db
+from api.model.database.avatar import Avatar
 
 from api.service.metadata import SerializeMetadata
 
@@ -37,6 +38,8 @@ class Usuario(db.Model):
     updated_user = db.Column(db.Integer, db.ForeignKey('usuarios.id'), nullable=False)
     # creation/update
 
+    avatar_id = db.Column(db.Integer, db.ForeignKey('avatars.id'), nullable=False)
+
     def update(self, data):
         for key in data:
             setattr(self, key, data[key])
@@ -61,5 +64,12 @@ class Usuario(db.Model):
 
         if metadata or created is not None or updated is not None:
             obj = SerializeMetadata(self, into=obj, created=created, updated=updated)
+
+        # Consulta personalizada para obter os dados do avatar
+        avatar_data = db.session.query(Avatar).filter_by(id=self.avatar_id).first()
+
+        if avatar_data is not None:
+            avatar_serialized = avatar_data.serialize()
+            obj["avatar_data"] = avatar_serialized
 
         return obj
