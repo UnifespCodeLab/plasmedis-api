@@ -16,7 +16,8 @@ user_create = api.model("User Create", {
     "email": fields.String("user@user.com"),
     "name": fields.String("name"),
     "password": fields.String("password"),
-    "data": fields.Nested(user_data, allow_null=True)
+    "data": fields.Nested(user_data, allow_null=True),
+    "avatar_id": fields.Integer,
 })
 
 user_update = api.model("User Update", {

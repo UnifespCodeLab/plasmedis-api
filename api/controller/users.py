@@ -50,7 +50,6 @@ class UserId(Resource):
     @required(response=response.user_complete, token=True)
     def get(self, id):
         user = ById(id, get_boolean_arg("with_data", False))
-
         return {"user": user}, 200
 
     @cross_origin(origin='*', headers=['Content-Type', 'Authorization'])
