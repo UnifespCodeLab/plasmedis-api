@@ -51,7 +51,7 @@ class CategoriesId(Resource):
     @required(response=default.message, token=True)
     def delete(self, id):
         data = None
-        if req.data.read():
+        if req.data:
             data = json.loads(req.data.decode('utf-8'))
 
         try:
