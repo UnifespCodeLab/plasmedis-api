@@ -18,6 +18,7 @@ DROP TABLE IF EXISTS categorias;
 DROP TABLE IF EXISTS usuarios;
 DROP TABLE IF EXISTS privilegios;
 DROP TABLE IF EXISTS avatar;
+DROP TABLE IF EXISTS notificacoes;
 
 --
 -- USUARIOS
@@ -155,4 +156,23 @@ CREATE TABLE settings (
     api JSON DEFAULT NULL,
 
     user_data JSON DEFAULT NULL
+);
+
+--
+-- NOTIFICACOES
+--
+
+CREATE TABLE notificacoes (
+    id INTEGER NOT NULL GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+
+    user_id INTEGER NOT NULL,
+    content CHARACTER VARYING(400) NOT NULL,
+    read BOOLEAN NOT NULL DEFAULT FALSE,
+
+    FOREIGN KEY (user_id) REFERENCES usuarios (id),
+
+    -- creation/update
+    created_date TIMESTAMP WITHOUT TIME ZONE NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    updated_date TIMESTAMP WITHOUT TIME ZONE NOT NULL DEFAULT CURRENT_TIMESTAMP
+    -- creation/update
 );

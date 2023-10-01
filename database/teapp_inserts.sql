@@ -38,6 +38,11 @@ VALUES (0, 'Post 2', 2, 'true', '2022-03-02 14:31:21.414159', 0, '2022-03-02 14:
 INSERT INTO postagens (categoria, titulo, texto, selo, created_date, created_user, updated_date, updated_user)
 VALUES (1, 'Post 3', 3, 'true', '2022-03-02 14:31:21.414159', 0, '2022-03-02 14:31:21.414159', 0); -- 3
 
+INSERT INTO notificacoes (user_id, content, read, created_date, updated_date)
+VALUES (0, 'Notificação 1', 'false', '2022-03-02 14:31:21.414159', '2022-03-02 14:31:21.414159'), -- 1
+       (0, 'Notificação 2', 'false', '2022-03-02 14:31:21.414159', '2022-03-02 14:31:21.414159'), -- 2
+       (0, 'Notificação 3', 'false', '2022-03-02 14:31:21.414159', '2022-03-02 14:31:21.414159')  -- 3
+;
 
 SELECT * FROM settings;
 
