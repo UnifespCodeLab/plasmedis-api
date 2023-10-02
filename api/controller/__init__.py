@@ -5,3 +5,4 @@ from api.controller import categories
 from api.controller import posts
 from api.controller import comments
 from api.controller import settings
+from api.controller import notifications
