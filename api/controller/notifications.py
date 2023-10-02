@@ -43,6 +43,22 @@ class Notifications(Resource):
         return {"message": f"Notificacao {id} criada"}, 200
     
 
+@notifications.route("/user/<int:id>")
+class UserNotifications(Resource):
+    @cross_origin(origin='*', headers=['Content-Type', 'Authorization'])
+    @required(response=response.notifications_list, token=True)
+    def get(self, id):
+        results = All(user_id=id)
+
+        page, limit = get_pagination_arg()
+        path = get_path_without_pagination_args()
+        notifications_page = get_paginated_list("notifications", results, path, page, limit)
+
+        if 'notifications' in notifications_page:
+            return notifications_page, 200
+        return notifications_page, 400
+    
+
 @notifications.route("/<int:id>/read")
 class MarkAsRead(Resource):
     @cross_origin(origin='*', headers=['Content-Type', 'Authorization'])
