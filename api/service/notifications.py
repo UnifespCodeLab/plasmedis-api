@@ -7,6 +7,7 @@ def All():
 
     return [notification.serialize() for notification in notifications]
 
+
 def Create(data):
     new_notification = Notificacao(user_id=data['user_id'], content=data['content'])
 
@@ -14,3 +15,11 @@ def Create(data):
     db.session.commit()
 
     return new_notification.id
+
+
+def UpdateRead(id, read):
+    notification = Notificacao.query.get_or_404(id)
+    notification.read = read
+
+    db.session.commit()
+
