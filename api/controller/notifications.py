@@ -4,8 +4,7 @@ from flask_restx import Resource
 from api import api
 
 from api.util.decorators import required
-from api.util.auth import get_authorized_user
-from api.util.request import get_path_without_pagination_args, get_pagination_arg
+from api.util.request import get_path_without_pagination_args, get_pagination_arg, get_boolean_arg
 from api.util.response import get_paginated_list
 
 from api.service.notifications import All, Create, UpdateRead
@@ -65,11 +64,12 @@ class MarkAsRead(Resource):
     @required(response=default.message, token=True)
     def put(self, id):
         try:
-            UpdateRead(id, True)
+            status = get_boolean_arg("status")
+            UpdateRead(id, status)
         except MessagedError as e:
             return {"message": e.message}, 500
         
-        return {"message": f"Notificacao {id} marcada como lida"}, 200
+        return {"message": f"Notificacao {id} marcada como lida" if status else f"Notificacao {id} marcada como nao lida"}, 200
     
 
 @notifications.route("/bulk-read")
@@ -83,6 +83,6 @@ class BulkMarkAsRead(Resource):
         except MessagedError as e:
             for id in data['ids']:
                 UpdateRead(id, False)
-            return {"message": f"Houve algum erro ao marcar uma ou mais notificacoes como lida. Mensagem de erro: {e.message}"}, 500
+            return {"message": f"Houve algum erro ao marcar uma ou mais notificacoes como lidas. Mensagem de erro: {e.message}"}, 500
         
         return {"message": f"Notificacoes marcadas como lidas"}, 200

@@ -20,7 +20,7 @@ def Create(data):
     return new_notification.id
 
 
-def UpdateRead(id, read):
+def UpdateRead(id, read=True):
     notification = Notificacao.query.get_or_404(id)
     notification.read = read
 
