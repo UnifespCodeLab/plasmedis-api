@@ -1,10 +1,15 @@
 from api import api
 from flask_restx import fields
 
+notification_action = api.model("Notification Action", {
+    "id": fields.Integer,
+    "object_id": fields.Integer,
+    "description": fields.String,
+})
+
 notification = api.model("Notification", {
     "id": fields.Integer,
-    "action_type": fields.Integer,
-    "action_object_id": fields.Integer,
+    "action": fields.Nested(notification_action),
     "user_id": fields.Integer,
     "content": fields.String,
     "read": fields.Boolean,

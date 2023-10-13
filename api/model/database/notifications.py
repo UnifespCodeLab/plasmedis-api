@@ -25,8 +25,10 @@ class Notificacao(db.Model):
         return {
             "id": self.id,
             "user_id": self.user_id,
-            "action_type": self.action_type,
-            "action_object_id": self.action_object_id,
+            "action": {
+                "id": self.action_type,
+                "object_id": self.action_object_id
+            },
             "content": self.content,
             "read": self.read,
             "created_date": self.created_date.strftime("%Y-%m-%dT%H:%M:%S"),
