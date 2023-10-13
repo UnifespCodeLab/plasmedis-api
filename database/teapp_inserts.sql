@@ -38,11 +38,13 @@ VALUES (0, 'Post 2', 2, 'true', '2022-03-02 14:31:21.414159', 0, '2022-03-02 14:
 INSERT INTO postagens (categoria, titulo, texto, selo, created_date, created_user, updated_date, updated_user)
 VALUES (1, 'Post 3', 3, 'true', '2022-03-02 14:31:21.414159', 0, '2022-03-02 14:31:21.414159', 0); -- 3
 
-INSERT INTO notificacoes (user_id, content, read, created_date, updated_date)
-VALUES (0, 'Notificação 1', 'false', '2022-03-02 14:31:21.414159', '2022-03-02 14:31:21.414159'), -- 1
-       (0, 'Notificação 2', 'false', '2022-03-02 14:31:21.414159', '2022-03-02 14:31:21.414159'), -- 2
-       (0, 'Notificação 3', 'false', '2022-03-02 14:31:21.414159', '2022-03-02 14:31:21.414159')  -- 3
-;
+INSERT INTO notificacoes (user_id, action_type, action_object_id, content, read, created_date, updated_date)
+VALUES (0, 1, null, '🎉 Nova categoria adicionada! Prepare-se para gerenciar e moderar os posts na categoria Sintomas Atípicos!🌟', 'false', '2023-03-07 14:31:21.414159', '2022-03-07 14:31:21.414159'),  -- 1
+       (0, 2, 3, '🔔 X novos posts na categoria Interação Social que você segue! Não perca, confira agora! 📚✨', 'false', '2023-03-06 14:31:21.414159', '2022-03-06 14:31:21.414159'),  -- 1
+       (0, 3, 2, '✅ Seu post Post 2 foi verificado por um administrador! Agradecemos pela sua contribuição. 🙌', 'false', '2022-03-05 14:31:21.414159', '2022-03-05 14:31:21.414159'),  -- 2
+       (0, 4, null, '🔔 Você tem X novos posts aguardando verificação. 🕵️‍♂️', 'false', '2022-03-04 14:31:21.414159', '2022-03-04 14:31:21.414159'),  -- 3
+       (0, 5, null, '⚠️ Lembrete: Complete seu perfil para aproveitar todas as funcionalidades da plataforma ao máximo! 🛠️', 'false', '2022-03-03 14:31:21.414159', '2022-03-03 14:31:21.414159'), -- 4
+       (0, 6, null, '⏰ Lembrete: É hora de revisar e limpar usuários inativos para manter a plataforma atualizada e eficiente. 🧹', 'false', '2022-03-02 14:31:21.414159', '2022-03-02 14:31:21.414159');  -- 5
 
 SELECT * FROM settings;
 

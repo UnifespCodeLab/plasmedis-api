@@ -8,6 +8,9 @@ class Notificacao(db.Model):
 
     user_id = db.Column(db.Integer, db.ForeignKey('usuarios.id'), nullable=False)
 
+    action_type = db.Column(db.Integer, nullable=False)
+    action_object_id = db.Column(db.Integer)
+
     content = db.Column(db.String(400), nullable=False)
     read = db.Column(db.Boolean, default=False, nullable=False)
 
@@ -22,6 +25,8 @@ class Notificacao(db.Model):
         return {
             "id": self.id,
             "user_id": self.user_id,
+            "action_type": self.action_type,
+            "action_object_id": self.action_object_id,
             "content": self.content,
             "read": self.read,
             "created_date": self.created_date.strftime("%Y-%m-%dT%H:%M:%S"),

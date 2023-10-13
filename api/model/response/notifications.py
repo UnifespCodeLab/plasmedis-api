@@ -3,6 +3,8 @@ from flask_restx import fields
 
 notification = api.model("Notification", {
     "id": fields.Integer,
+    "action_type": fields.Integer,
+    "action_object_id": fields.Integer,
     "user_id": fields.Integer,
     "content": fields.String,
     "read": fields.Boolean,
