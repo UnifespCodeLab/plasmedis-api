@@ -20,6 +20,7 @@ privileges = api.namespace('privileges', description="Privileges namespace")
 @privileges.route("")
 class Privileges(Resource):
     @cross_origin(origin='*', headers=['Content-Type', 'Authorization'])
+    @api.doc(summary='GET Privileges', description='This endpoint handles a GET request that returns the list of all privileges')
     @required(response=response.privileges_list, token=True)
     def get(self):
         results = All()
@@ -33,6 +34,7 @@ class Privileges(Resource):
         return privileges_page, 400
 
     @cross_origin(origin='*', headers=['Content-Type', 'Authorization'])
+    @api.doc(summary='POST Privilege', description='This endpoint handles a POST request that create a new privilege')
     @required(response=default.message, request=request.privileges, token=True)
     def post(self, data):
         new_id = Create(data, get_authorized_user())

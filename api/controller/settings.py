@@ -15,6 +15,7 @@ settings = api.namespace('settings', description="Settings namespace")
 @settings.route("/<string:type>")
 class Settings(Resource):
     @cross_origin(origin='*', headers=['Content-Type', 'Authorization'])
+    @api.doc(summary='GET Setting by Type', description='This endpoint handles a GET request that get a setting by type')
     @required(response=response.settings_response, token=True)
     def get(self, type):
         if type not in ['web', 'api']:
@@ -29,6 +30,7 @@ class Settings(Resource):
 class UserData(Resource):
     
     @cross_origin(origin='*', headers=['Content-Type', 'Authorization'])
+    @api.doc(summary='POST Setting', description='This endpoint handles a POST request that create a new setting')
     @required(response=default.message, request=request.user_data_request, token=True)
     def post(self, data):
         obj = createUserData(data)
@@ -39,6 +41,7 @@ class UserData(Resource):
         return {"message": "User data created"}, 201
 
     @cross_origin(origin='*', headers=['Content-Type', 'Authorization'])
+    @api.doc(summary='PUT Setting', description='This endpoint handles a PUT request which updates the user data of a setting')
     @required(response=default.message, request=request.user_data_request, token=True)
     def put(self, data):
         obj = updateUserData(data)
@@ -49,7 +52,8 @@ class UserData(Resource):
 @settings.route("/<int:settingsId>")
 class UserDataId(Resource):
     @cross_origin(origin='*', headers=['Content-Type', 'Authorization'])
-    @api.marshal_with(user_data_response.generic_model)
+    @api.doc(summary='GET Setting by ID', description='This endpoint handles a GET request that get the user data of a setting by ID')
+    @required(response=user_data_response.generic_model, token=True)
     def get(self, settingsId):
 
         data = findUserDataById(settingsId);
@@ -62,6 +66,7 @@ class UserDataId(Resource):
     
 
     @cross_origin(origin='*', headers=['Content-Type', 'Authorization'])
+    @api.doc(summary='DELETE Setting', description='This endpoint handles a DELETE request that delete a setting by ID')
     @required(response=default.message, token=True)
     def delete(self, settingsId):
         

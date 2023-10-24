@@ -21,6 +21,7 @@ auth = api.namespace('auth', description="Auth namespace")
 @auth.route("/login")
 class Login(Resource):
     @cross_origin(origin='*', headers=['Content-Type', 'Authorization'])
+    @api.doc(summary='GET Authorization Version', description='This endpoint handles a GET request that return the API Authorization Version')
     @required(response=response.auth_version, token=False)
     def get(self):
         # isso esta fora do service pq não depende de nenhum dado do portal, mas sim do "protocolo" de login da api
@@ -32,6 +33,7 @@ class Login(Resource):
         return {'version': AUTH_VERSION}, 200
 
     @cross_origin(origin='*', headers=['Content-Type', 'Authorization'])
+    @api.doc(summary='POST User Login', description='This endpoint handles a POST request that return the token and the user data')
     @required(response=response.login_response, request=request.credentials, token=False)
     def post(self, data):
 
@@ -58,6 +60,7 @@ class Login(Resource):
 @auth.route("/recover")
 class Recover(Resource):
     @cross_origin(origin='*', headers=['Content-Type', 'Authorization'])
+    @api.doc(summary='POST Recover Password', description='This endpoint handles a POST request which is used to recover the user password')
     @required(response=default.message, request=request.recover_password, token=False)
     def post(self, data):
         username = data.get("username", None)
@@ -89,6 +92,7 @@ class Recover(Resource):
 @auth.route('/me')
 class Me(Resource):
     @cross_origin(origin='*', headers=['Content-Type', 'Authorization'])
+    @api.doc(summary='GET Authorized User', description='This endpoint handles a GET request which is used to get the authorized user data')
     @required(response=response.me, token=True)
     def get(self):
         # arg data: if response should include data field
