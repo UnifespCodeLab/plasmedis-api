@@ -29,8 +29,7 @@ def All(user_id=None):
 
 
 def Create(data):
-
-    new_notification = Notificacao(action_type=data['action_type'], action_object_id=data['action_object_id'], action_description=ACTION_TYPES[data['action_type']], user_id=data['user_id'], content=data['content'])
+    new_notification = Notificacao(action_type=data['action_type'], action_object_id=data['action_object_id'], user_id=data['user_id'], content=data['content'])
 
     db.session.add(new_notification)
     db.session.commit()
