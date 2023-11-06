@@ -21,6 +21,7 @@ comments = api.namespace('comments', description="Comments namespace")
 @comments.route("")
 class Comments(Resource):
     @cross_origin(origin='*', headers=['Content-Type', 'Authorization'])
+    @api.doc(summary='POST Comment', description='This endpoint handles a POST request that post a comment')
     @required(response=default.message, request=request.comment, token=True)
     def post(self, data):
         id = Create(data, get_authorized_user())
@@ -28,6 +29,7 @@ class Comments(Resource):
         return {"message": f"Comentário {id} registrado"}, 200
 
     @cross_origin(origin='*', headers=['Content-Type', 'Authorization'])
+    @api.doc(summary='GET Comments', description='This endpoint handles a GET request and returns the list of comments')
     @required(response=response.comment_list, token=True)
     def get(self):
         results = All()
@@ -44,6 +46,7 @@ class Comments(Resource):
 @comments.route("/post/<int:id>")
 class CommentsPost(Resource):
     @cross_origin(origin='*', headers=['Content-Type', 'Authorization'])
+    @api.doc(summary='GET Comment by ID', description='This endpoint handles a GET request and returns a specific comment by ID')
     @required(response=response.comment_list, token=True)
     def get(self, id):
         results = ByPost(id)
@@ -60,6 +63,7 @@ class CommentsPost(Resource):
 @comments.route("/<int:id>")
 class CommentsId(Resource):
     @cross_origin(origin='*', headers=['Content-Type', 'Authorization'])
+    @api.doc(summary='DELETE Comment by ID', description='This endpoint handles a DELETE request that deletes a comment by ID')
     @required(response=default.message, token=True)
     def delete(self, id):
         try:

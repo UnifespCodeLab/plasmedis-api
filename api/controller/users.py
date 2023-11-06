@@ -21,6 +21,7 @@ users = api.namespace('users', description="Users namespace")
 @users.route("")
 class User(Resource):
     @cross_origin(origin='*', headers=['Content-Type', 'Authorization'])
+    @api.doc(summary='GET List of Users', description='This endpoint handles a GET request that return the list of all users or only the active users')
     @required(response=response.users_list, token=True)
     def get(self):
         users = All(not get_boolean_arg("inactive"), get_string_list_arg("email"), get_string_list_arg("username"))
@@ -34,6 +35,7 @@ class User(Resource):
         return users_page, 400
 
     @cross_origin(origin='*', headers=['Content-Type', 'Authorization'])
+    @api.doc(summary='POST New User', description='This endpoint handles a POST request that create a new user')
     @required(response=response.user_create_message, request=request.user_create, token=True)
     def post(self, data):
         try:
@@ -47,12 +49,14 @@ class User(Resource):
 @users.route('/<int:id>')
 class UserId(Resource):
     @cross_origin(origin='*', headers=['Content-Type', 'Authorization'])
+    @api.doc(summary='GET User by ID', description='This endpoint handles a GET request that get a user by ID')
     @required(response=response.user_complete, token=True)
     def get(self, id):
         user = ById(id, get_boolean_arg("with_data", False))
         return {"user": user}, 200
 
     @cross_origin(origin='*', headers=['Content-Type', 'Authorization'])
+    @api.doc(summary='PUT User by ID', description='This endpoint handles a PUT request that update a user by ID')
     @required(response=default.message, request=request.user_update, token=True)
     def put(self, data, id):
         try:
@@ -65,6 +69,7 @@ class UserId(Resource):
             return {"message": e.message}, 500
 
     @cross_origin(origin='*', headers=['Content-Type', 'Authorization'])
+    @api.doc(summary='DELETE User by ID', description='This endpoint handles a DELETE request that delete a user by ID')
     @required(response=default.message, token=True)
     def delete(self, id):
         try:
@@ -80,6 +85,7 @@ class UserId(Resource):
 @users.route("/verify/<string:username>")
 class Verify(Resource):
     @cross_origin(origin='*', headers=['Content-Type', 'Authorization'])
+    @api.doc(summary='GET username available', description='This endpoint handles a GET request that check if a username is available')
     @required(response=default.message, token=True)
     def get(self, username):
         exists = VerifyUsername(username)

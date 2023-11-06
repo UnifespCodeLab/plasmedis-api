@@ -1,33 +1,25 @@
 from api import api
 from flask_restx import fields
-
-user_data = api.model("User Data", {
-    # "sexo": fields.String(max_length=1),
-    # "nascimento": fields.String(),
-    # "cor": fields.String(),
-    # "telefone": fields.String(),
-    # "rua": fields.String(),
-    # "numero_casa": fields.Integer()
-})
+import api.model.response.users as user_response
 
 user_create = api.model("User Create", {
     "type": fields.Integer(3),
     "username": fields.String("username"),
     "email": fields.String("user@user.com"),
     "name": fields.String("name"),
-    "password": fields.String("password"),
-    "data": fields.Nested(user_data, allow_null=True),
-    "avatar_id": fields.Integer,
+    "password": fields.String("123456789"),
+    "data": fields.Nested(user_response.user_data, allow_null=True),
+    "avatar_id": fields.Integer(1),
 })
 
 user_update = api.model("User Update", {
-    "type": fields.Integer,
-    "active": fields.Boolean,
-    "email": fields.String,
-    "username": fields.String,
-    "name": fields.String,
-    "password": fields.String("password"),
-    "confirmation_password": fields.String("password"),
-    "data": fields.Nested(user_data, skip_none=True)
+    "type": fields.Integer(example=3),
+    "active": fields.Boolean(example=True),
+    "email": fields.String(example="user@user.com"),
+    "username": fields.String(example="username"),
+    "name": fields.String(example="name"),
+    "password": fields.String(example="password"),
+    "confirmation_password": fields.String(example="password"),
+    "data": fields.Nested(user_response.user_data, skip_none=True)
 })
 

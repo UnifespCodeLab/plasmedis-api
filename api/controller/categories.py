@@ -25,6 +25,7 @@ categories = api.namespace('categories', description="Categories namespace")
 @categories.route("")
 class Forms(Resource):
     @cross_origin(origin='*', headers=['Content-Type', 'Authorization'])
+    @api.doc(summary='POST Category', description='This endpoint handles a POST request and is used to create a new category')
     @required(response=default.message, request=request.category, token=True)
     def post(self, data):
         id = Create(data, get_authorized_user())
@@ -32,6 +33,7 @@ class Forms(Resource):
         return {"message": f"Categoria {id} criada com sucesso"}, 200
     
     @cross_origin(origin='*', headers=['Content-Type', 'Authorization'])
+    @api.doc(summary='GET Categories', description='This endpoint handles a GET request and is used to get the list of all categories')
     @required(response=response.category_list, token=True)
     def get(self):
         categorias = All()
@@ -48,6 +50,7 @@ class Forms(Resource):
 @categories.route("/<int:id>")
 class CategoriesId(Resource):
     @cross_origin(origin='*', headers=['Content-Type', 'Authorization'])
+    @api.doc(summary='DELETE Category', description='This endpoint handles a DELETE request that delete a category by ID')
     @required(response=default.message, token=True)
     def delete(self, id):
         data = None
