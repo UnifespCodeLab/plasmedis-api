@@ -2,6 +2,7 @@ FROM python:3.6 as base
 # Base image to be reused
 # LABEL maintainer "Thiago Pacheco <hi@pacheco.io>"
 RUN apt-get update
+RUN apt-get install net-tools
 WORKDIR /usr/src/app
 COPY ./requirements.txt ./requirements.txt
 RUN pip install --no-cache-dir -r requirements.txt
