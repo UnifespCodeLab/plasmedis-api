@@ -6,3 +6,9 @@ post_create = api.model("Post Create", {
     "titulo": fields.String(example="Title"),
     "texto": fields.String(example="Text")
 })
+
+post_update = api.model("Post Update", {
+    "categoria": fields.Integer(example=1),
+    "titulo": fields.String(example="Title"),
+    "texto": fields.String(example="Text")
+})
