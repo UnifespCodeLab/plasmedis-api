@@ -9,7 +9,7 @@ from api.util.request import get_integer_list_arg, get_boolean_arg, get_path_wit
 from api.util.response import get_paginated_list
 from api.util.auth import get_authorized_user
 
-from api.service.posts import All, ById, Create, UpdateStamp, Remove
+from api.service.posts import All, ById, UpdateById, Create, UpdateStamp, Remove
 
 import api.model.request.posts as request
 import api.model.response.posts as response
@@ -52,6 +52,17 @@ class PostsId(Resource):
     @required(response=response.post_complete, token=True)
     def get(self, id):
         return ById(id), 200
+
+    @cross_origin(origin='*', headers=['Content-Type', 'Authorization'])
+    @api.doc(summary='PUT Post by ID', description='This endpoint handles a PUT request that update a post by ID')
+    @required(response=default.message, request=request.post_update, token=True)
+    def put(self, data, id):
+        try:
+            post = UpdateById(id, data, get_authorized_user())
+
+            return {"message": f"Dados de {post['titulo']} atualizados"}, 200
+        except MessagedError as e:
+            return {"message": e.message}, 500
 
     @cross_origin(origin='*', headers=['Content-Type', 'Authorization'])
     @api.doc(summary='DELETE Post by ID', description='This endpoint handles a DELETE request that deletes a post by ID')
