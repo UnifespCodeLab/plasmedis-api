@@ -66,7 +66,6 @@ def Create(data, creator):
 
 
 def UpdateById(id, data, updater):
-    print(data)
     is_updated_admin = VerifyAccess(updater, [ADMINISTRADOR])
     post = Postagem.query.get_or_404(id)
 
