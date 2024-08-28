@@ -11,7 +11,7 @@ from api.util.auth import get_authorized_user
 from api.util.request import get_path_without_pagination_args, get_pagination_arg
 from api.util.response import get_paginated_list
 
-from api.service.categories import All, ById, Create, Remove
+from api.service.categories import All, ById, Create, UpdateById, Remove
 
 import api.model.request.categories as request
 import api.model.response.categories as response
@@ -31,7 +31,7 @@ class Forms(Resource):
         id = Create(data, get_authorized_user())
 
         return {"message": f"Categoria {id} criada com sucesso"}, 200
-    
+
     @cross_origin(origin='*', headers=['Content-Type', 'Authorization'])
     @api.doc(summary='GET Categories', description='This endpoint handles a GET request and is used to get the list of all categories')
     @required(response=response.category_list, token=True)
@@ -49,6 +49,17 @@ class Forms(Resource):
 
 @categories.route("/<int:id>")
 class CategoriesId(Resource):
+    @cross_origin(origin='*', headers=['Content-Type', 'Authorization'])
+    @api.doc(summary='PUT Category', description='This endpoint handles a PUT request that update a category by ID')
+    @required(response=default.message, request=request.category, token=True)
+    def put(self, data, id):
+        try:
+            category = UpdateById(id, data, get_authorized_user())
+
+            return {"message": f"Dados de {category['name']} atualizados"}, 200
+        except MessagedError as e:
+            return {"message": e.message}, 500
+
     @cross_origin(origin='*', headers=['Content-Type', 'Authorization'])
     @api.doc(summary='DELETE Category', description='This endpoint handles a DELETE request that delete a category by ID')
     @required(response=default.message, token=True)
