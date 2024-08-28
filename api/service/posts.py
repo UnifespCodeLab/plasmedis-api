@@ -65,6 +65,22 @@ def Create(data, creator):
     return new_post.id
 
 
+def UpdateById(id, data, updater):
+    print(data)
+    is_updated_admin = VerifyAccess(updater, [ADMINISTRADOR])
+    post = Postagem.query.get_or_404(id)
+
+    if not is_updated_admin:
+        raise ForbiddenError("O usuário não tem autorização para essa ação")
+
+    post.update(data)
+    UpdateMetadata(post, updater.id)
+
+    db.session.commit()
+
+    return post.serialize()
+
+
 def UpdateStamp(id, status, updater):
     postagem = Postagem.query.get_or_404(id)
     postagem.selo = status
