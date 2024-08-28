@@ -5,7 +5,7 @@ from api import db
 from api.model.database.categories import Categoria
 from api.model.database.posts import Postagem
 
-from api.service.metadata import CreateMetadata, SerializeMetadata
+from api.service.metadata import CreateMetadata, UpdateMetadata
 from api.service.privileges import ADMINISTRADOR
 from api.service.users import VerifyAccess
 from api.util.errors import ForbiddenError
@@ -41,6 +41,17 @@ def Create(data, creator):
 
     return new_categoria.id
 
+def UpdateById(id, data, updater):
+    if not VerifyAccess(updater, [ADMINISTRADOR]):
+        raise ForbiddenError("O usuário não tem autorização para essa ação")
+
+    category = Categoria.query.get_or_404(id)
+    category.update(data)
+    UpdateMetadata(category, updater.id)
+
+    db.session.commit()
+
+    return category.serialize()
 
 def Remove(id, replacement, remover):
     if not VerifyAccess(remover, [ADMINISTRADOR]):
