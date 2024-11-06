@@ -54,3 +54,23 @@ def Remove(id, remover):
         return comentario.serialize()
     else:
         raise ForbiddenError("O usuário não tem autorização para essa ação")
+
+def Edit(id, data, editor):
+    # Busco o comentário pelo ID ou retorna 404 se não encontrado
+    comentario = Comentario.query.get_or_404(id)
+
+    # Verifico se o editor tem permissão para editar o comentário
+    if editor.id == comentario.created_user or VerifyAccess(editor, [ADMINISTRADOR, MODERADOR]):
+        # Atualizo os campos do comentário se presentes na requisição
+        if 'texto' in data:
+            comentario.texto = data['texto']
+        if 'resposta' in data:
+            comentario.resposta = data['resposta']
+        if 'postagem' in data:
+            comentario.postagem = data['postagem']
+
+        db.session.commit()
+
+        return comentario.serialize()
+    else:
+        raise ForbiddenError("O usuário não tem autorização para essa ação")
